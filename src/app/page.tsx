@@ -1,4 +1,4 @@
-import Login from "@/components/containers/auth/login";
+import Login from "@/components/Menu/auth/login";
 
 export default function Home() {
 	return (

@@ -9,6 +9,11 @@
 		"lint": "next lint"
 	},
 	"dependencies": {
+		"@heroui/button": "^2.2.13",
+		"@heroui/image": "^2.2.9",
+		"@heroui/input": "^2.4.13",
+		"@heroui/system": "^2.4.10",
+		"@heroui/theme": "^2.4.9",
 		"@nextui-org/button": "^2.2.8",
 		"@nextui-org/input": "^2.4.7",
 		"@nextui-org/link": "^2.2.6",
