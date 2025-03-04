@@ -1,4 +1,5 @@
 "use client";
+
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import { LogoICon } from "@/assets/svgs/common";
 import { Input } from "@heroui/input";
@@ -13,12 +14,12 @@ const Login = () => {
 		router.push("/dashboard");
 	};
 	return (
-		<div className="flex h-screen w-full flex-col items-center justify-center gap-8 max-sm:w-full sm:w-full md:w-full lg:w-full">
+		<div className="flex h-screen w-full max-w-full flex-col items-center justify-center gap-8 max-sm:w-full sm:w-full md:w-full lg:w-full">
 			<LogoICon className="h-40 w-40 sm:h-60 sm:w-60 md:h-72 md:w-72" />
 			<h1 className="text-xl font-bold max-sm:text-sm">Nice to see you again</h1>
 			<div className="flex flex-col items-center justify-center gap-6 max-sm:w-full sm:w-full md:w-full lg:w-full">
 				<Input
-					className="w-1/4"
+					className="max-lg:w-5/6 lg:w-1/4"
 					label="Username"
 					type="username"
 					size="lg"
@@ -26,21 +27,18 @@ const Login = () => {
 					radius="none"
 				/>
 				<Input
-					className="w-1/4"
+					className="max-lg:w-5/6 lg:w-1/4"
 					label="Password"
 					type="password"
 					size="lg"
 					color="default"
 					radius="sm"
 				/>
-				<div className="flex w-1/4 items-center justify-end max-md:justify-center">
-					<Popover
-						placement="right"
-						backdrop="blur"
-					>
+				<div className="flex w-1/4 items-center justify-end max-lg:justify-center">
+					<Popover backdrop="blur">
 						<PopoverTrigger>
 							<Link
-								className="text-sm text-red-600 underline max-sm:text-xs"
+								className="md:item-center text-sm text-red-600 underline max-sm:text-xs"
 								href="#"
 							>
 								Quên mật khẩu?
@@ -62,7 +60,7 @@ const Login = () => {
 			<Button
 				onPress={handleLogin}
 				color="primary"
-				className="text-md w-1/4 bg-[#ff4336] font-semibold max-md:w-1/4"
+				className="text-md bg-[#ff4336] font-semibold max-lg:w-5/6 lg:w-1/4"
 				variant="solid"
 				size="lg"
 			>

@@ -8,7 +8,7 @@ const config = {
 		"./components/**/*.{ts,tsx}",
 		"./app/**/*.{ts,tsx}",
 		"./src/**/*.{ts,tsx}",
-		"./node_modules/@heroui/theme/dist/components/(button|image|input|popover|ripple|spinner|form).js",
+		"./node_modules/@heroui/theme/dist/components/(button|image|input|popover|table|ripple|spinner|form|checkbox|spacer).js",
 	],
 	prefix: "",
 	theme: {
@@ -27,12 +27,12 @@ const config = {
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
 				primary: {
-					DEFAULT: "hsl(var(--primary))",
-					foreground: "hsl(var(--primary-foreground))",
+					DEFAULT: "#F75449",
+					foreground: "#FFFFFF",
 				},
 				secondary: {
-					DEFAULT: "hsl(var(--secondary))",
-					foreground: "hsl(var(--secondary-foreground))",
+					DEFAULT: "#00315C",
+					foreground: "#FFFFFF",
 				},
 				destructive: {
 					DEFAULT: "hsl(var(--destructive))",

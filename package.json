@@ -13,7 +13,9 @@
 		"@heroui/image": "^2.2.9",
 		"@heroui/input": "^2.4.13",
 		"@heroui/popover": "^2.3.15",
+		"@heroui/react": "^2.7.4",
 		"@heroui/system": "^2.4.10",
+		"@heroui/table": "^2.2.14",
 		"@heroui/theme": "^2.4.9",
 		"@nextui-org/button": "^2.2.8",
 		"@nextui-org/input": "^2.4.7",
@@ -32,6 +34,7 @@
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
+		"@types/lodash": "^4.17.16",
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
