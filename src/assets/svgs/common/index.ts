@@ -11,3 +11,7 @@ export * from "./not-found";
 export * from "./dashboard";
 export * from "./location";
 export * from "./fly";
+export * from "./edit";
+export * from "./trash";
+export * from "./search";
+export * from "./logout";

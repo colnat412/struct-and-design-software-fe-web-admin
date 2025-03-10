@@ -14,11 +14,11 @@ export const MenuItem = ({ title, icon, selected, handleClick }: MenuItemProps) 
 		<Button
 			onPress={handleClick}
 			startContent={icon}
-			className={`flex w-full flex-row items-center justify-start gap-6 p-5 ${selected ? "bg-primary" : ""}`}
+			className={`flex w-full flex-row items-center justify-start gap-6 p-5 font-semibold ${selected ? "bg-primary text-white" : "bg-white text-black"}`}
 			radius="none"
 			variant="solid"
 		>
-			<span className="font-semibold text-secondary">{title}</span>
+			{title}
 		</Button>
 	);
 };

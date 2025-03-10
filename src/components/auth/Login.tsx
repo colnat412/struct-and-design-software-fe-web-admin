@@ -41,7 +41,7 @@ const Login = () => {
 								className="md:item-center text-sm text-red-600 underline max-sm:text-xs"
 								href="#"
 							>
-								Quên mật khẩu?
+								Forgot Password ?
 							</Link>
 						</PopoverTrigger>
 						<PopoverContent>
