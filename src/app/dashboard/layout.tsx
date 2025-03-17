@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lato } from "next/font/google";
-import { LogoICon, LogoutIcon } from "@/assets/svgs/common";
+import { AvatarIcon, LogoICon, LogoutIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Menu } from "@/components";
+import Image from "next/image";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -58,6 +59,14 @@ export default function RootLayout({
 						</div>
 					</div>
 					<div className="flex-1">{children}</div>
+					<div className="relative">
+						<button className="absolute right-2 top-2 flex flex-col gap-4 rounded-full border-2 border-secondary p-3">
+							<AvatarIcon
+								width={20}
+								height={20}
+							/>
+						</button>
+					</div>
 				</div>
 			</body>
 		</html>

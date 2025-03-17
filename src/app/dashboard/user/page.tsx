@@ -2,11 +2,11 @@ import { UserPage } from "@/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard",
+	title: "Dashboard | User",
 };
 
-const DashboardPage = () => {
+const User = () => {
 	return <UserPage />;
 };
 
-export default DashboardPage;
+export default User;

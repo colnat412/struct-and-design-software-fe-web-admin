@@ -15,3 +15,4 @@ export * from "./edit";
 export * from "./trash";
 export * from "./search";
 export * from "./logout";
+export * from "./avatar";

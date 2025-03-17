@@ -7,12 +7,92 @@ import { Button } from "@heroui/button";
 import { Metadata } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { UserServices } from "@/api";
+import { IErrorAuth, IUser } from "@/types";
 
+const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const Login = () => {
+	const [username, setUsername] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
+	const [error, setError] = useState<IErrorAuth>({
+		isError: {
+			username: false,
+			password: false,
+			isLogin: false,
+		},
+		errorMessages: {
+			username: "",
+			password: "",
+			isLogin: "",
+		},
+	});
+
+	const [user, setUser] = useState<IUser | null>(null);
+
 	const router = useRouter();
-	const handleLogin = () => {
-		router.push("/dashboard");
+
+	const checkUsername = () => {
+		if (username.length <= 0) {
+			setError({
+				isError: {
+					...error.isError,
+					username: true,
+				},
+				errorMessages: {
+					...error.errorMessages,
+					username: "Username is required",
+				},
+			});
+			return true;
+		}
+		return false;
 	};
+	const checkPassword = () => {
+		if (password.length <= 0) {
+			setError({
+				isError: {
+					...error.isError,
+					password: true,
+				},
+				errorMessages: {
+					...error.errorMessages,
+					password: "Password is required",
+				},
+			});
+			return true;
+		}
+		return false;
+	};
+	const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setUsername(e.target.value);
+	};
+	const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setPassword(e.target.value);
+	};
+
+	const handleLogin = async () => {
+		const token = await UserServices.signIn(username, password);
+
+		// if (checkUsername() && checkPassword()) {
+		if (token) router.push("/dashboard");
+		// 	else {
+		// 		setError({
+		// 			isError: {
+		// 				...error.isError,
+		// 				isLogin: true,
+		// 			},
+		// 			errorMessages: {
+		// 				...error.errorMessages,
+		// 				isLogin: "Username or password is incorrect",
+		// 			},
+		// 		});
+		// 	}
+		// }
+		else router.push("/login");
+	};
+
 	return (
 		<div className="flex h-screen w-full max-w-full flex-col items-center justify-center gap-8 max-sm:w-full sm:w-full md:w-full lg:w-full">
 			<LogoICon className="h-40 w-40 sm:h-60 sm:w-60 md:h-72 md:w-72" />
@@ -25,6 +105,10 @@ const Login = () => {
 					size="lg"
 					color="default"
 					radius="none"
+					onChange={handleChangeUsername}
+					onBlur={checkUsername}
+					errorMessage={error.errorMessages.username}
+					isInvalid={error.isError.username}
 				/>
 				<Input
 					className="max-lg:w-5/6 lg:w-1/4"
@@ -33,6 +117,10 @@ const Login = () => {
 					size="lg"
 					color="default"
 					radius="sm"
+					onChange={handleChangePassword}
+					onBlur={checkPassword}
+					errorMessage={error.errorMessages.password}
+					isInvalid={error.isError.password}
 				/>
 				<div className="flex w-1/4 items-center justify-end max-lg:justify-center">
 					<Popover backdrop="blur">

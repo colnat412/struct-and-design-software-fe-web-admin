@@ -33,7 +33,7 @@ export const ModalCreate = ({ isOpen, onOpenChange }: Props) => {
 			<ModalContent className="w-full">
 				{(onClose) => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">Create new user</ModalHeader>
+						<ModalHeader className="flex flex-col gap-1">Add new user</ModalHeader>
 						<ModalBody>
 							<Input
 								label="Username"

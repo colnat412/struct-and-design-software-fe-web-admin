@@ -24,6 +24,7 @@
 		"@nextui-org/link": "^2.2.6",
 		"@nextui-org/system": "^2.4.5",
 		"@nextui-org/theme": "^2.4.4",
+		"axios": "^1.8.3",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"framer-motion": "^11.15.0",
