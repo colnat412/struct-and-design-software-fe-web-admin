@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { UserServices } from "@/api";
 import { IErrorAuth, IUser } from "@/types";
+import { AnimatePresence, motion } from "framer-motion";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const Login = () => {
@@ -35,36 +36,62 @@ const Login = () => {
 
 	const checkUsername = () => {
 		if (username.length <= 0) {
-			setError({
+			setError((prevError) => ({
+				...prevError,
 				isError: {
-					...error.isError,
+					...prevError.isError,
 					username: true,
 				},
 				errorMessages: {
-					...error.errorMessages,
+					...prevError.errorMessages,
 					username: "Username is required",
 				},
-			});
-			return true;
+			}));
+			return false;
 		}
-		return false;
+
+		setError((prevError) => ({
+			...prevError,
+			isError: {
+				...prevError.isError,
+				username: false,
+			},
+			errorMessages: {
+				...prevError.errorMessages,
+				username: "",
+			},
+		}));
+		return true;
 	};
 	const checkPassword = () => {
 		if (password.length <= 0) {
-			setError({
+			setError((prevError) => ({
+				...prevError,
 				isError: {
-					...error.isError,
+					...prevError.isError,
 					password: true,
 				},
 				errorMessages: {
-					...error.errorMessages,
+					...prevError.errorMessages,
 					password: "Password is required",
 				},
-			});
-			return true;
+			}));
+			return false;
 		}
-		return false;
+		setError((prevError) => ({
+			...prevError,
+			isError: {
+				...prevError.isError,
+				password: false,
+			},
+			errorMessages: {
+				...prevError.errorMessages,
+				password: "",
+			},
+		}));
+		return true;
 	};
+
 	const handleChangeUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(e.target.value);
 	};
@@ -75,22 +102,21 @@ const Login = () => {
 	const handleLogin = async () => {
 		const token = await UserServices.signIn(username, password);
 
-		// if (checkUsername() && checkPassword()) {
-		if (token) router.push("/dashboard");
-		// 	else {
-		// 		setError({
-		// 			isError: {
-		// 				...error.isError,
-		// 				isLogin: true,
-		// 			},
-		// 			errorMessages: {
-		// 				...error.errorMessages,
-		// 				isLogin: "Username or password is incorrect",
-		// 			},
-		// 		});
-		// 	}
-		// }
-		else router.push("/login");
+		if (checkUsername() && checkPassword()) {
+			if (token) router.push("/dashboard");
+			else {
+				setError({
+					isError: {
+						...error.isError,
+						isLogin: true,
+					},
+					errorMessages: {
+						...error.errorMessages,
+						isLogin: "Username or password is incorrect",
+					},
+				});
+			}
+		} else router.push("/login");
 	};
 
 	return (
@@ -107,8 +133,8 @@ const Login = () => {
 					radius="none"
 					onChange={handleChangeUsername}
 					onBlur={checkUsername}
-					errorMessage={error.errorMessages.username}
 					isInvalid={error.isError.username}
+					errorMessage={error.errorMessages.username}
 				/>
 				<Input
 					className="max-lg:w-5/6 lg:w-1/4"
@@ -119,8 +145,8 @@ const Login = () => {
 					radius="sm"
 					onChange={handleChangePassword}
 					onBlur={checkPassword}
-					errorMessage={error.errorMessages.password}
 					isInvalid={error.isError.password}
+					errorMessage={error.errorMessages.password}
 				/>
 				<div className="flex w-1/4 items-center justify-end max-lg:justify-center">
 					<Popover backdrop="blur">
