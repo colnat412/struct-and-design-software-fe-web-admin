@@ -1,1 +1,1 @@
-export * from "./TourPage";
+export * from "./TourList";

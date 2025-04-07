@@ -40,10 +40,11 @@ export default function RootLayout({
 				<div className="flex h-screen w-full flex-row">
 					<div className="flex h-screen w-1/6 flex-col items-center justify-center gap-12 border-r-2">
 						<LogoICon
+							className="m-4"
 							width={200}
 							height={200}
 						/>
-						<span className="font-semibold">Welcome back, John</span>
+						<span className="font-semibold">Welcome back, ?</span>
 						<Menu />
 						<div className="my-2 flex w-full flex-col items-center gap-4">
 							<Button

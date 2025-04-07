@@ -1,20 +1,6 @@
 "use client";
 
-import {
-	Modal,
-	ModalContent,
-	ModalHeader,
-	ModalBody,
-	ModalFooter,
-	Button,
-	useDisclosure,
-	Checkbox,
-	Input,
-	Link,
-} from "@heroui/react";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@heroui/react";
 
 interface Props {
 	isOpen: boolean;

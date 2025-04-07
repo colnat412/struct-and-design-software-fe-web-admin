@@ -13,6 +13,7 @@ export * from "./location";
 export * from "./fly";
 export * from "./edit";
 export * from "./trash";
+export * from "./trashh";
 export * from "./search";
 export * from "./logout";
 export * from "./avatar";

@@ -1,41 +1,67 @@
 "use client";
+import { ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import { EditIcon, SearchIcon, TrashIcon } from "@/assets/svgs/common";
 import { ModalCreate } from "@/components/modals";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const users = Array.from({ length: 100 }, (_, i) => ({
-	id: i + 1,
-	username: `user${i + 1}`,
-	email: `test${i + 1}@gmail.com`,
-	name: `John Doe ${i + 1}`,
-	phone: Math.floor(Math.random() * 1000000000),
-	role: i % 2 === 0 ? "Admin" : "Customer",
-}));
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableFooter,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
+import { FormatNumber } from "@/utils/api";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
 
-export const UserPage = () => {
+export const TourPage = () => {
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
 	const router = useRouter();
 	const pathname = usePathname();
 	const [page, setPage] = useState(1);
 
-	const totalPages = Math.ceil(users.length / rowsPerPage);
+	const [data, setData] = useState<TourResponseDto[]>([]);
+	const totalPages = Math.ceil(data.length / rowsPerPage);
 	const currentGroup = Math.ceil(page / pagesPerGroup);
 	const startPage = (currentGroup - 1) * pagesPerGroup + 1;
 	const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
-	const currentData = users.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
+
+	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			router.push("/login");
+			return;
+		}
+
+		const fetchData = async () => {
+			try {
+				const tours = await tourServices.getAll("/tours");
+				setData(Array.isArray(tours) ? tours : []);
+			} catch (error) {
+				console.error("Error fetching tour data:", error);
+			}
+		};
+		fetchData();
+	}, []);
 
 	return (
 		<div className="flex w-full flex-col gap-4 p-4">
 			<div className="flex w-full flex-col gap-8 p-2">
-				<span className="mx-1 font-semibold">Users Management</span>
+				<span className="mx-1 font-semibold">Tours Management</span>
 				<div className="flex w-full flex-row gap-4">
 					<Input
 						startContent={
@@ -61,7 +87,7 @@ export const UserPage = () => {
 							onPress={onOpen}
 							className="w-1/6 rounded-sm bg-secondary font-semibold text-white"
 						>
-							Add new user
+							Add new tour
 						</Button>
 					</div>
 					<ModalCreate
@@ -71,58 +97,27 @@ export const UserPage = () => {
 					/>
 				</div>
 			</div>
-			<table className="w-full border-collapse border border-gray-300">
-				<thead>
-					<tr className="w-full bg-gray-100">
-						<th className="border border-gray-300 p-2">Username</th>
-						<th className="border border-gray-300 p-2">Email</th>
-						<th className="border border-gray-300 p-2">Full Name</th>
-						<th className="border border-gray-300 p-2">Phone</th>
-						<th className="border border-gray-300 p-2">Role</th>
-						<th className="w-1/6 border border-gray-300 p-2">Action</th>
-					</tr>
-				</thead>
-				<tbody>
-					{currentData.map((user) => (
-						<tr
-							key={user.id}
-							className={`${user.id % 2 == 0 ? "bg-gray-100" : ""} border border-gray-300`}
-						>
-							<td className="p-2 text-center">{user.username}</td>
-							<td className="p-2 text-center">{user.email}</td>
-							<td className="p-2 text-center">{user.name}</td>
-							<td className="p-2 text-center">{user.phone}</td>
-							<td
-								className={`p-2 text-center ${user.id % 2 == 0 ? "text-primary" : "text-secondary"}`}
-							>
-								{user.role}
-							</td>
-							<td className="flex flex-row items-center justify-center gap-2 p-2 text-center">
-								<Button
-									variant="light"
-									size="sm"
-								>
-									<EditIcon
-										width={20}
-										height={20}
-										className="stroke-secondary"
-									/>
-								</Button>
-								<Button
-									variant="light"
-									size="sm"
-								>
-									<TrashIcon
-										width={20}
-										height={20}
-										className="stroke-red-600"
-									/>
-								</Button>
-							</td>
-						</tr>
+			<Table>
+				<TableCaption>A list of your tour</TableCaption>
+				<TableHeader>
+					<TableRow>
+						<TableHead>Name</TableHead>
+						<TableHead>Description</TableHead>
+						<TableHead>Price</TableHead>
+						<TableHead>Duration</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{currentData.map((tour) => (
+						<TableRow key={tour.id}>
+							<TableCell className="font-medium">{tour.name}</TableCell>
+							<TableCell>{tour.description}</TableCell>
+							<TableCell>{FormatNumber.toFormatNumber(tour.price)}đ</TableCell>
+							<TableCell>{tour.duration}</TableCell>
+						</TableRow>
 					))}
-				</tbody>
-			</table>
+				</TableBody>
+			</Table>
 			<div className="mt-4 flex flex-row justify-end gap-2 text-center">
 				<Button
 					size="sm"

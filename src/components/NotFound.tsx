@@ -9,7 +9,9 @@ export const NotFoundComponent = () => {
 	const router = useRouter();
 	return (
 		<div className="flex h-screen flex-col items-center justify-center gap-10">
-			<span className="text-2xl text-secondary">The page you are looking for can't be found</span>
+			<span className="text-2xl text-secondary">
+				This page is under construction and will be coming to you soon.
+			</span>
 			<NotFoundIcon
 				width={256}
 				height={256}
