@@ -1,57 +1,98 @@
+"use client";
+
+import { UserResponseDto } from "@/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
+import { Form, Radio, RadioGroup } from "@heroui/react";
 
-export const UserDetails = () => {
+interface UserDetailProps {
+	selectedUser: UserResponseDto | null;
+	setSelectedUser: React.Dispatch<React.SetStateAction<UserResponseDto | null>>;
+}
+
+export const UserDetails = ({ selectedUser, setSelectedUser }: UserDetailProps) => {
 	return (
-		<div className="flex h-screen w-full items-center justify-center bg-gray-100 p-4">
-			<div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-lg">
-				<h2 className="mb-6 text-center text-2xl font-bold text-secondary">Create new user</h2>
-				<div className="flex flex-col gap-4">
-					<Input
-						className="w-full"
-						label="Email"
-						type="email"
-						size="lg"
-						color="default"
-						radius="md"
-					/>
-					<Input
-						className="w-full"
-						label="Username"
-						type="text"
-						size="lg"
-						color="default"
-						radius="md"
-					/>
-					<Input
-						className="w-full"
-						label="Password"
-						type="password"
-						size="lg"
-						color="default"
-						radius="md"
-					/>
-					<Input
-						className="w-full"
-						label="Full Name"
-						type="text"
-						size="lg"
-						color="default"
-						radius="md"
-					/>
-					<Input
-						className="w-full"
-						label="Phone"
-						type="tel"
-						size="lg"
-						color="default"
-						radius="md"
-					/>
+		<Form className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4">
+			<span className="mx-1 font-semibold">User Information</span>
+			<div className="flex w-full flex-col gap-5">
+				<Input
+					isRequired
+					errorMessage="Please enter a username"
+					label="Username"
+					labelPlacement="outside"
+					name="username"
+					placeholder="Enter your username"
+					type="text"
+					value={selectedUser?.username}
+				/>
+				<Input
+					isRequired
+					errorMessage="Please enter a email"
+					label="Email"
+					labelPlacement="outside"
+					name="email"
+					placeholder="Enter your email"
+					type="text"
+					value={selectedUser?.email}
+				/>
+				<Input
+					isRequired
+					errorMessage="Please enter a name"
+					label="Name"
+					labelPlacement="outside"
+					name="name"
+					placeholder="Enter your name"
+					type="text"
+					value={selectedUser?.name}
+				/>
+
+				<RadioGroup
+					value={selectedUser?.gender !== undefined ? selectedUser.gender.toString() : ""}
+					className="w-full"
+					label="Gender"
+					orientation="horizontal"
+				>
+					<Radio
+						checked
+						value="0"
+					>
+						Male
+					</Radio>
+					<Radio value="1">Female</Radio>
+				</RadioGroup>
+
+				<Input
+					className="w-full"
+					isRequired
+					errorMessage="Please enter a valid username"
+					label="Phone"
+					labelPlacement="outside"
+					name="phone"
+					placeholder="Enter your phone"
+					type="text"
+					value={selectedUser?.phone.toString()}
+				/>
+				<Input
+					className="w-full"
+					isRequired
+					errorMessage="Please enter a role"
+					label="Role"
+					labelPlacement="outside"
+					name="username"
+					placeholder="Enter your role"
+					type="text"
+					value={selectedUser?.role}
+				/>
+				<div className="flex w-full justify-end gap-4">
+					<Button onPress={() => setSelectedUser(null)}>Cancel</Button>
+					<Button
+						color="primary"
+						type="submit"
+					>
+						Save
+					</Button>
 				</div>
-				<Button className="mt-6 w-full rounded-lg bg-primary py-3 text-lg font-semibold text-white shadow-md">
-					Save
-				</Button>
 			</div>
-		</div>
+		</Form>
 	);
 };
