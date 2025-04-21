@@ -1,100 +1,133 @@
 "use client";
 
-import { UserResponseDto } from "@/api";
+import { ServiceConstants, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
+import { toInputDateFormat } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Form, Radio, RadioGroup } from "@heroui/react";
+import { Form, Select, SelectItem } from "@heroui/react";
+import { useEffect, useState } from "react";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<UserResponseDto | null>>;
 	setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
+	setData: React.Dispatch<React.SetStateAction<UserResponseDto[]>>;
 }
 
-export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate }: UserDetailProps) => {
-	const handleEditUser = () => {};
+export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setData }: UserDetailProps) => {
+	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
+
+	const [userForm, setUserForm] = useState<UserUpdateDto>({
+		phone: "",
+		fullName: "",
+		birthday: "",
+		gender: 0,
+	});
+
+	useEffect(() => {
+		if (selectedUser) {
+			setUserForm({
+				phone: selectedUser.phone ? String(selectedUser.phone) : "",
+				fullName: selectedUser.fullName || "",
+				birthday: toInputDateFormat(selectedUser.birthday) || "",
+				gender: Number(selectedUser.gender) ?? 0,
+			});
+		}
+	}, [selectedUser]);
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value } = e.target;
+		setUserForm((prev) => ({
+			...prev,
+			[name]: value,
+		}));
+	};
+
+	const handleEdit = async () => {
+		try {
+			const userId = selectedUser?.userId;
+			if (!userId) return;
+
+			const payload: UserUpdateDto = {
+				...userForm,
+				birthday: new Date(userForm.birthday).toISOString(),
+				gender: Number(userForm.gender),
+			};
+
+			const updatedUser = await userServices.update(userId, payload as any, "/users");
+			if (!updatedUser) {
+				throw new Error("Failed to update user");
+			}
+
+			const freshData = await userServices.getAll("/users");
+			setData(Array.isArray(freshData) ? freshData : []);
+
+			alert("User updated successfully!");
+			setSelectedUser(null);
+			setIsCreate(false);
+		} catch (error) {
+			console.error("Update failed:", error);
+			alert("Failed to update user.");
+		}
+	};
+
 	return (
-		<Form className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4">
+		<Form
+			className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4"
+			onSubmit={(e) => {
+				e.preventDefault();
+				handleEdit();
+			}}
+		>
 			<span className="mx-1 font-semibold">User Information</span>
 			<div className="flex w-full flex-col gap-5">
 				<Input
-					isRequired
-					errorMessage="Please enter a username"
 					label="Username"
 					labelPlacement="outside"
-					name="username"
-					placeholder="Enter your username"
-					type="text"
-					isDisabled={selectedUser?.username !== undefined}
-					value={selectedUser?.username}
+					isDisabled
+					value={selectedUser?.username || ""}
 				/>
 				<Input
-					isRequired
-					errorMessage="Please enter a email"
 					label="Email"
 					labelPlacement="outside"
-					name="email"
-					placeholder="Enter your email"
-					type="text"
-					value={selectedUser?.email}
+					isDisabled
+					value={selectedUser?.email || ""}
 				/>
 				<Input
 					isRequired
-					errorMessage="Please enter a name"
-					label="Name"
+					name="fullName"
+					label="Full Name"
 					labelPlacement="outside"
-					name="name"
-					placeholder="Enter your name"
-					type="text"
-					value={selectedUser?.name}
+					placeholder="Enter full name"
+					value={userForm.fullName}
+					onChange={handleChange}
 				/>
 				<Input
-					label="Birthday"
-					type="date"
-				/>
-				<RadioGroup
-					value={selectedUser?.gender !== undefined ? selectedUser.gender.toString() : ""}
-					className="w-full"
-					label="Gender"
-					orientation="horizontal"
-				>
-					<Radio
-						checked
-						value="0"
-					>
-						Male
-					</Radio>
-					<Radio value="1">Female</Radio>
-				</RadioGroup>
-
-				<Input
-					className="w-full"
 					isRequired
-					errorMessage="Please enter a valid username"
+					name="phone"
 					label="Phone"
 					labelPlacement="outside"
-					name="phone"
-					placeholder="Enter your phone"
-					type="text"
-					value={selectedUser?.phone.toString()}
+					placeholder="Enter phone"
+					value={userForm.phone}
+					onChange={handleChange}
 				/>
 				<Input
-					className="w-full"
 					isRequired
-					errorMessage="Please enter a role"
-					label="Role"
+					name="birthday"
+					label="Birthday"
 					labelPlacement="outside"
-					name="username"
-					placeholder="Enter your role"
-					type="text"
-					value={selectedUser?.role}
+					type="date"
+					value={userForm.birthday}
+					onChange={handleChange}
 				/>
+
 				<div className="flex w-full justify-end gap-4">
 					<Button
 						onPress={() => {
 							setSelectedUser(null);
 							setIsCreate(false);
 						}}
+						type="button"
 					>
 						Cancel
 					</Button>

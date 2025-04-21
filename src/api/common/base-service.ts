@@ -50,9 +50,9 @@ export default class BaseService<T> {
 		}
 	}
 
-	async update(id: string | number, data: T): Promise<T> {
+	async update(id: string | number, data: T, url_api: string): Promise<T> {
 		try {
-			const response = await api.put<T>(`${this.endpoint}/${id}`, data, {
+			const response = await api.put<T>(`${this.endpoint + url_api}/${id}`, data, {
 				headers: this.getAuthHeader(),
 			});
 			return response.data;

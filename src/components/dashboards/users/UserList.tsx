@@ -7,6 +7,7 @@ import { Button } from "@heroui/button";
 import { TrashIconn, SearchIcon } from "@/assets/svgs/common";
 import { UserDetails } from "./UserDetails";
 import { UserResponseDto, UserServices, ServiceConstants } from "@/api";
+import { formatDate } from "@/utils/api";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -42,6 +43,8 @@ export const UserPage = () => {
 			try {
 				setIsLoading(true);
 				const users = await userServices.getAll("/users");
+				console.log("Fetched users:", users);
+
 				setData(Array.isArray(users) ? users : []);
 			} catch (error) {
 				console.error("Error fetching users:", error);
@@ -81,7 +84,6 @@ export const UserPage = () => {
 				router.push("/login");
 				return;
 			}
-			console.log("Deleting user with ID:", id);
 
 			await userServices.delete(id, "/users");
 			setData((prev) => prev.filter((user) => user.userId !== id));
@@ -160,11 +162,11 @@ export const UserPage = () => {
 											{user.username}
 										</TableCell>
 										<TableCell>{user.email}</TableCell>
-										<TableCell>{user.name}</TableCell>
+										<TableCell>{user.fullName}</TableCell>
 										<TableCell>{user.phone}</TableCell>
-										<TableCell>{Number(user.gender) === 1 ? "Nam" : "Nữ"}</TableCell>
+										<TableCell>{Number(user.gender) === 0 ? "Male" : "Female"}</TableCell>
 										<TableCell>
-											{new Date(user.birthday).toLocaleDateString("vi-VN")}
+											{formatDate(new Date(user.birthday).toDateString())}
 										</TableCell>
 										<TableCell
 											className={
@@ -246,6 +248,7 @@ export const UserPage = () => {
 							selectedUser={selectedUser}
 							setSelectedUser={setSelectedUser}
 							setIsCreate={setIsCreate}
+							setData={setData}
 						/>
 					</div>
 				</>

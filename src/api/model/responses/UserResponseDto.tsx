@@ -2,10 +2,10 @@ export interface UserResponseDto {
 	userId: string;
 	username: string;
 	email: string;
-	name: string;
-	phone: number;
+	fullName: string;
+	phone: string;
 	gender: string;
-	birthday: Date;
+	birthday: string;
 	avatarUrl: string;
 	role: string;
 }
