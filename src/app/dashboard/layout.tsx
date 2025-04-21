@@ -7,6 +7,8 @@ import { Button } from "@heroui/button";
 import { Menu } from "@/components";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { ServiceConstants, UserResponseDto, UserServices } from "@/api";
+import { useEffect, useState } from "react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -24,16 +26,38 @@ const lato = Lato({
 	weight: ["400", "700"],
 });
 
+const userServices = new UserServices(ServiceConstants.USER_SERVICE);
+
 export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+	const [data, setData] = useState<UserResponseDto>();
 	const router = useRouter();
 	const handleLogout = () => {
 		localStorage.removeItem("token");
 		router.push("/login");
 	};
+
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			router.push("/login");
+			return;
+		}
+		// const fetchData = async () => {
+		// 	// get data return after login success
+		// 	try {
+		// 		const user = await userServices.getById("/users/me", token);
+		// 		setData(user);
+		// 	} catch (error) {
+		// 		console.error("Error fetching user:", error);
+		// 	}
+		// };
+		// fetchData();
+	}, []);
+
 	return (
 		<html lang="en">
 			<body className={lato.className}>

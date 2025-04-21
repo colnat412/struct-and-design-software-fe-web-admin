@@ -16,6 +16,7 @@ export const UserPage = () => {
 	const [page, setPage] = useState(1);
 	const [data, setData] = useState<UserResponseDto[]>([]);
 	const [selectedUser, setSelectedUser] = useState<UserResponseDto | null>(null);
+	const [isCreate, setIsCreate] = useState<boolean>(false);
 
 	const [leftWidth, setLeftWidth] = useState(60);
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -28,6 +29,7 @@ export const UserPage = () => {
 
 	const router = useRouter();
 	const pathname = usePathname();
+
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
 
 	useEffect(() => {
@@ -69,6 +71,25 @@ export const UserPage = () => {
 		document.addEventListener("mouseup", handleMouseUp);
 	};
 
+	const handleDeleteUser = async (id: string) => {
+		try {
+			const confirmed = window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?");
+			if (!confirmed) return;
+
+			const token = localStorage.getItem("token");
+			if (!token) {
+				router.push("/login");
+				return;
+			}
+			console.log("Deleting user with ID:", id);
+
+			await userServices.delete(id, "/users");
+			setData((prev) => prev.filter((user) => user.userId !== id));
+		} catch (error) {
+			console.error("Error deleting user:", error);
+		}
+	};
+
 	return (
 		<div
 			ref={containerRef}
@@ -99,6 +120,10 @@ export const UserPage = () => {
 						Search
 					</Button>
 					<Button
+						onPress={() => {
+							setIsCreate(true);
+							setSelectedUser(null);
+						}}
 						radius="none"
 						className="rounded-sm bg-secondary font-semibold text-white"
 					>
@@ -127,7 +152,7 @@ export const UserPage = () => {
 							<TableBody>
 								{currentData.map((user) => (
 									<TableRow
-										key={user.id}
+										key={user.userId}
 										onClick={() => setSelectedUser(user)}
 										className="cursor-pointer hover:bg-gray-100"
 									>
@@ -148,8 +173,9 @@ export const UserPage = () => {
 										>
 											{user.role}
 										</TableCell>
-										<TableCell width={40}>
+										<TableCell width={20}>
 											<Button
+												onPress={() => handleDeleteUser(user.userId)}
 												size="sm"
 												variant="light"
 											>
@@ -205,7 +231,7 @@ export const UserPage = () => {
 				)}
 			</div>
 
-			{selectedUser && (
+			{(selectedUser || isCreate) && (
 				<>
 					<div
 						onMouseDown={handleMouseDown}
@@ -219,6 +245,7 @@ export const UserPage = () => {
 						<UserDetails
 							selectedUser={selectedUser}
 							setSelectedUser={setSelectedUser}
+							setIsCreate={setIsCreate}
 						/>
 					</div>
 				</>

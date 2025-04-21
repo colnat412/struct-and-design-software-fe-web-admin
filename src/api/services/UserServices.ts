@@ -40,7 +40,25 @@ export class UserServices extends BaseService<UserResponseDto> {
 
 	public static async getUserById(token: string, id: string) {
 		try {
-			const res = await axios.get(`${apiUrl}/user-service/users/${id}`, {});
+			const res = await axios.get(`${apiUrl}/user-service/users/${id}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			return res.data.data;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	public static async deleteUser(token: string, id: string) {
+		try {
+			const res = await axios.delete(`${apiUrl}/user-service/users/${id}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			return res.data.data;
 		} catch (error) {
 			throw error;
 		}

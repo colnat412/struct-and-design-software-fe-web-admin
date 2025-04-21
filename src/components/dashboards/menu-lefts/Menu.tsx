@@ -4,12 +4,10 @@ import { DashboardIcon, FlyIcon, LocationIcon } from "@/assets/svgs/common";
 import { MenuItem } from "./MenuItem";
 import { ContactIcon } from "@/assets/svgs";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
 
 export const Menu = () => {
 	const router = useRouter();
 	const pathname = usePathname();
-	const [selectedItem, setSelectedItem] = useState<number | null>(null);
 
 	const items = [
 		{
@@ -62,22 +60,21 @@ export const Menu = () => {
 		},
 	];
 
-	const handleClick = (id: number) => {
-		setSelectedItem(id);
-		router.push(items[id].path.toLowerCase());
+	const handleClick = (path: string) => {
+		router.push(path.toLowerCase());
 	};
 
 	return (
 		<div className="flex h-screen w-full flex-col gap-4">
 			<span className="text-md px-2 font-semibold">Menu</span>
 			{items.map((item) => {
-				const isSelected = selectedItem === item.id || pathname === item.path;
+				const isSelected = pathname === item.path;
 				return (
 					<MenuItem
 						key={item.id}
 						title={item.title}
 						icon={item.icon(isSelected)}
-						handleClick={() => handleClick(item.id)}
+						handleClick={() => handleClick(item.path)}
 						selected={isSelected}
 					/>
 				);

@@ -8,9 +8,11 @@ import { Form, Radio, RadioGroup } from "@heroui/react";
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
 	setSelectedUser: React.Dispatch<React.SetStateAction<UserResponseDto | null>>;
+	setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const UserDetails = ({ selectedUser, setSelectedUser }: UserDetailProps) => {
+export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate }: UserDetailProps) => {
+	const handleEditUser = () => {};
 	return (
 		<Form className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4">
 			<span className="mx-1 font-semibold">User Information</span>
@@ -23,6 +25,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser }: UserDetailProps) 
 					name="username"
 					placeholder="Enter your username"
 					type="text"
+					isDisabled={selectedUser?.username !== undefined}
 					value={selectedUser?.username}
 				/>
 				<Input
@@ -45,7 +48,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser }: UserDetailProps) 
 					type="text"
 					value={selectedUser?.name}
 				/>
-
+				<Input
+					label="Birthday"
+					type="date"
+				/>
 				<RadioGroup
 					value={selectedUser?.gender !== undefined ? selectedUser.gender.toString() : ""}
 					className="w-full"
@@ -84,7 +90,14 @@ export const UserDetails = ({ selectedUser, setSelectedUser }: UserDetailProps) 
 					value={selectedUser?.role}
 				/>
 				<div className="flex w-full justify-end gap-4">
-					<Button onPress={() => setSelectedUser(null)}>Cancel</Button>
+					<Button
+						onPress={() => {
+							setSelectedUser(null);
+							setIsCreate(false);
+						}}
+					>
+						Cancel
+					</Button>
 					<Button
 						color="primary"
 						type="submit"

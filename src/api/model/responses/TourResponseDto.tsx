@@ -4,5 +4,5 @@ export interface TourResponseDto {
 	description: string;
 	price: number;
 	thumbnail: string;
-	duration: number;
+	duration: string;
 }

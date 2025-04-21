@@ -103,7 +103,7 @@ const Login = () => {
 		const token = await UserServices.signIn(username, password);
 
 		if (checkUsername() && checkPassword()) {
-			if (token) router.push("/dashboard");
+			if (token) router.push("/dashboard/user");
 			else {
 				setError({
 					isError: {

@@ -1,4 +1,4 @@
-import { TourPage } from "@/components";
+import { TourList } from "@/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 const Tour = () => {
-	return <TourPage />;
+	return <TourList />;
 };
 
 export default Tour;

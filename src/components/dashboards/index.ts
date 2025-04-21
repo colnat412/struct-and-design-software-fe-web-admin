@@ -1,4 +1,4 @@
-export * from "./menu-tab-lefts";
-export * from "./users-component";
+export * from "./menu-lefts";
+export * from "./users";
 export * from "./AvatarUser";
-export * from "./tours-component";
+export * from "./tours";
