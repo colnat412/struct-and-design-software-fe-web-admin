@@ -5,9 +5,9 @@ import { formatDateToDMY, formatTimestampToDate } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
+import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -24,17 +24,30 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		fullName: "",
 		birthday: "",
 		gender: "0",
+		password: "123456",
 	});
+
+	const [isCreating, setIsCreating] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (selectedUser) {
-			console.log("Selected user:", selectedUser);
 			setUserForm({
 				phone: selectedUser.phone ? String(selectedUser.phone) : "",
 				fullName: selectedUser.fullName || "",
 				birthday: formatTimestampToDate(selectedUser.birthday) || "",
-				gender: selectedUser.gender ?? "0",
+				gender: String(selectedUser.gender || "0"),
+				password: "",
 			});
+			setIsCreating(false);
+		} else {
+			setUserForm({
+				phone: "",
+				fullName: "",
+				birthday: "",
+				gender: "0",
+				password: "123456",
+			});
+			setIsCreating(true);
 		}
 	}, [selectedUser]);
 
@@ -89,13 +102,12 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				return;
 			}
 
-			const validatedGender = Number(userForm.gender) === 1 ? 1 : 0;
-
 			const payload: UserUpdateDto = {
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
 				birthday: formatDateToDMY(userForm.birthday),
 				gender: userForm.gender,
+				...(selectedUser ? {} : { password: userForm.password }), // Chỉ gửi password khi tạo mới
 			};
 
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
@@ -116,13 +128,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
 				setData(freshData);
-
 				setSelectedUser(null);
 				setIsCreate(false);
 			}
 		} catch (error) {
-			console.error("Update failed:", error);
-
 			let errorMessage = "Failed to update user";
 			if (error instanceof Error) {
 				errorMessage = error.message;
@@ -155,13 +164,15 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				<Input
 					label="Username"
 					labelPlacement="outside"
-					isDisabled
+					placeholder="Enter username"
+					isDisabled={!isCreating}
 					value={selectedUser?.username || ""}
 				/>
 				<Input
 					label="Email"
 					labelPlacement="outside"
-					isDisabled
+					placeholder="Enter email"
+					isDisabled={!isCreating}
 					value={selectedUser?.email || ""}
 				/>
 				<Input
@@ -193,21 +204,35 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					value={userForm.birthday}
 					onChange={handleChange}
 				/>
+				{isCreating && (
+					<Input
+						isRequired
+						name="password"
+						label="Password"
+						labelPlacement="outside"
+						placeholder="Enter password"
+						type="text"
+						defaultValue="123456"
+						value={userForm.password}
+						onChange={handleChange}
+					/>
+				)}
 
 				<RadioGroup
 					label="Gender"
 					className="flex w-full items-start justify-start"
 					orientation="horizontal"
-					value={userForm.gender.toString()}
-					onChange={(value) => {
+					defaultValue={userForm.gender}
+					value={userForm.gender}
+					onValueChange={(value) => {
 						setUserForm((prev) => ({
 							...prev,
-							gender: value as unknown as string,
+							gender: value,
 						}));
 					}}
 				>
-					<Radio value="1">Male</Radio>
 					<Radio value="0">Female</Radio>
+					<Radio value="1">Male</Radio>
 				</RadioGroup>
 				<div className="flex w-full justify-end gap-4">
 					<Button

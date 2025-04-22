@@ -103,7 +103,7 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 					name="price"
 					placeholder="Enter your price"
 					type="number"
-					value={FormatNumber.toFormatNumber(selectedTour?.price ?? 0)}
+					value={selectedTour?.price?.toString() || "0"}
 				/>
 
 				{/* Buttons */}

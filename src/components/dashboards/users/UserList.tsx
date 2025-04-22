@@ -1,13 +1,13 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { ServiceConstants, UserResponseDto, UserServices } from "@/api";
+import { SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { TrashIconn, SearchIcon } from "@/assets/svgs/common";
-import { UserDetails } from "./UserDetails";
-import { UserResponseDto, UserServices, ServiceConstants } from "@/api";
 import { formatDateToDisplay } from "@/utils/api";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { UserDetails } from "./UserDetails";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -54,6 +54,10 @@ export const UserPage = () => {
 		fetchData();
 	}, []);
 
+	useEffect(() => {
+		setLeftWidth(60);
+	}, [isCreate, selectedUser]);
+
 	const handleMouseDown = () => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (!containerRef.current) return;
@@ -98,7 +102,10 @@ export const UserPage = () => {
 		>
 			<div
 				className="flex flex-col gap-3 overflow-auto p-4"
-				style={{ width: selectedUser ? `${leftWidth}%` : "100%" }}
+				style={{
+					width: selectedUser || isCreate ? `${leftWidth}%` : "100%",
+					minWidth: "20%",
+				}}
 			>
 				<span className="text-lg font-semibold">Users Management</span>
 				<div className="mb-2 flex items-center gap-4">
@@ -124,6 +131,7 @@ export const UserPage = () => {
 						onPress={() => {
 							setIsCreate(true);
 							setSelectedUser(null);
+							setLeftWidth(60);
 						}}
 						radius="none"
 						className="rounded-sm bg-secondary font-semibold text-white"
@@ -243,7 +251,7 @@ export const UserPage = () => {
 					/>
 					<div
 						className="relative overflow-auto p-4"
-						style={{ width: `${100 - leftWidth}%` }}
+						style={{ width: `${100 - leftWidth}%`, minWidth: "20%" }} // Thêm minWidth
 					>
 						<UserDetails
 							selectedUser={selectedUser}
