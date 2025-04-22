@@ -1,7 +1,15 @@
 "use client";
 
 import { ServiceConstants, UserRequestDto, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
-import { formatDateToDMY, formatTimestampToDate } from "@/utils/api";
+import {
+	formatDateToDMY,
+	formatTimestampToDate,
+	isValidPhone,
+	isValidFullName,
+	isValidDate,
+	isValidEmail,
+	isNonEmpty,
+} from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
@@ -21,6 +29,8 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 	const fileInputRef = useRef<HTMLInputElement | null>(null); // Tham chiếu đến input file
 
 	const [userForm, setUserForm] = useState<UserUpdateDto>({
+		username: "",
+		email: "",
 		phone: "",
 		fullName: "",
 		birthday: "",
@@ -33,9 +43,9 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 
 	useEffect(() => {
 		if (selectedUser) {
-			console.log("Selected user:", selectedUser);
-
 			setUserForm({
+				username: selectedUser.username || "",
+				email: selectedUser.email || "",
 				phone: selectedUser.phone ? String(selectedUser.phone) : "",
 				fullName: selectedUser.fullName || "",
 				birthday: formatTimestampToDate(selectedUser.birthday) || "",
@@ -46,6 +56,8 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			setIsCreating(false);
 		} else {
 			setUserForm({
+				username: "",
+				email: "",
 				phone: "",
 				fullName: "",
 				birthday: "",
@@ -89,70 +101,35 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		try {
 			const userId = selectedUser?.userId;
 			if (!userId) return;
-			const phoneRegex = /^[0-9]{10,11}$/;
-			if (!phoneRegex.test(userForm.phone.trim())) {
-				toast.error("Please enter a valid phone number (10-11 digits)", {
-					duration: 3000,
-					position: "top-right",
-					style: {
-						background: "#ef4444",
-						color: "#fff",
-						padding: "16px",
-					},
-				});
+
+			// Sử dụng các hàm xác thực từ file validators.ts
+			if (!isValidPhone(userForm.phone)) {
+				toast.error("Please enter a valid phone number (10-11 digits)");
 				return;
 			}
-			if (userForm.fullName.trim().length < 2) {
-				toast.error("Full name must be at least 2 characters", {
-					duration: 3000,
-					position: "top-right",
-					style: {
-						background: "#ef4444",
-						color: "#fff",
-						padding: "16px",
-					},
-				});
+			if (!isValidFullName(userForm.fullName)) {
+				toast.error("Full name must be at least 2 characters");
 				return;
 			}
-			const dateTimestamp = new Date(userForm.birthday).getTime();
-			if (isNaN(dateTimestamp)) {
-				toast.error("Invalid date format", {
-					duration: 3000,
-					position: "top-right",
-					style: {
-						background: "#ef4444",
-						color: "#fff",
-						padding: "16px",
-					},
-				});
+			if (!isValidDate(userForm.birthday)) {
+				toast.error("Invalid date format");
 				return;
 			}
 
 			const payload: UserUpdateDto = {
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
-				birthday: formatDateToDMY(userForm.birthday),
+				birthday: userForm.birthday,
 				gender: userForm.gender,
 				...(selectedUser ? {} : { password: userForm.password }),
 				avatarUrl: userForm.avatarUrl,
 			};
-			console.log("Payload:", payload);
 
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
-			console.log("Updated user:", updatedUser);
-
 			if (!updatedUser) {
 				throw new Error("No response from server");
 			}
-			toast.success("User updated successfully!", {
-				duration: 3000,
-				position: "top-right",
-				style: {
-					background: "#22c55e",
-					color: "#fff",
-					padding: "16px",
-				},
-			});
+			toast.success("User updated successfully!");
 
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
@@ -161,28 +138,62 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				setIsCreate(false);
 			}
 		} catch (error) {
-			let errorMessage = "Failed to update user";
-			if (error instanceof Error) {
-				errorMessage = error.message;
-			} else if (axios.isAxiosError(error) && error.response) {
-				errorMessage = error.response.data?.message || "Server error occurred";
-			}
-
-			toast.error(errorMessage, {
-				duration: 3000,
-				position: "top-right",
-				style: {
-					background: "#ef4444",
-					color: "#fff",
-					padding: "16px",
-				},
-			});
+			toast.error("Failed to update user");
 		}
 	};
 
 	const handleAddNew = async () => {
 		try {
-		} catch (error) {}
+			// Sử dụng các hàm xác thực từ file validators.ts
+			if (!userForm.username?.trim()) {
+				toast.error("Username is required");
+				return;
+			}
+			if (!userForm.email?.trim()) {
+				toast.error("Email is required");
+				return;
+			}
+			if (!isValidPhone(userForm.phone)) {
+				toast.error("Please enter a valid phone number (10-11 digits)");
+				return;
+			}
+			if (!isValidFullName(userForm.fullName)) {
+				toast.error("Full name must be at least 2 characters");
+				return;
+			}
+			if (!isValidDate(userForm.birthday)) {
+				toast.error("Invalid date format");
+				return;
+			}
+
+			const payload = {
+				username: userForm.username.trim(),
+				password: userForm.password,
+				email: userForm.email.trim(),
+				phone: userForm.phone.trim(),
+				fullName: userForm.fullName.trim(),
+				avatarUrl: userForm.avatarUrl || "",
+				birthday: new Date(userForm.birthday).toISOString(),
+				gender: parseInt(userForm.gender),
+				role: "USER",
+			};
+
+			const newUser = await userServices.create(payload as any, "/users/register");
+			if (!newUser) {
+				throw new Error("Failed to create user");
+			}
+
+			toast.success("User created successfully!");
+
+			const freshData = await userServices.getAll("/users");
+			if (Array.isArray(freshData)) {
+				setData(freshData);
+				setSelectedUser(null);
+				setIsCreate(false);
+			}
+		} catch (error) {
+			toast.error("Failed to create user");
+		}
 	};
 
 	return (
@@ -190,7 +201,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4"
 			onSubmit={(e) => {
 				e.preventDefault();
-				handleEdit();
+				isCreating ? handleAddNew() : handleEdit();
 			}}
 		>
 			<span className="mx-1 font-semibold">User Information</span>
@@ -223,18 +234,25 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				</div>
 
 				<Input
+					isRequired
+					name="username"
 					label="Username"
 					labelPlacement="outside"
 					placeholder="Enter username"
+					value={isCreating ? userForm.username : selectedUser?.username || ""}
+					onChange={handleChange}
 					isDisabled={!isCreating}
-					value={selectedUser?.username || ""}
 				/>
 				<Input
+					isRequired
+					name="email"
 					label="Email"
 					labelPlacement="outside"
 					placeholder="Enter email"
+					type="email"
+					value={isCreating ? userForm.email : selectedUser?.email || ""}
+					onChange={handleChange}
 					isDisabled={!isCreating}
-					value={selectedUser?.email || ""}
 				/>
 				<Input
 					isRequired
@@ -306,11 +324,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 						Cancel
 					</Button>
 					<Button
-						onPress={handleEdit}
 						color="primary"
 						type="submit"
 					>
-						Save
+						{isCreating ? "Create" : "Save"}
 					</Button>
 				</div>
 			</div>
