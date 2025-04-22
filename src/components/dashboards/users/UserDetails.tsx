@@ -1,11 +1,13 @@
 "use client";
 
 import { ServiceConstants, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
-import { toInputDateFormat } from "@/utils/api";
+import { formatDateToDMY, formatTimestampToDate } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { Form, Select, SelectItem } from "@heroui/react";
+import { Form, Radio, RadioGroup } from "@heroui/react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -21,16 +23,17 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		phone: "",
 		fullName: "",
 		birthday: "",
-		gender: 0,
+		gender: "0",
 	});
 
 	useEffect(() => {
 		if (selectedUser) {
+			console.log("Selected user:", selectedUser);
 			setUserForm({
 				phone: selectedUser.phone ? String(selectedUser.phone) : "",
 				fullName: selectedUser.fullName || "",
-				birthday: toInputDateFormat(selectedUser.birthday) || "",
-				gender: Number(selectedUser.gender) ?? 0,
+				birthday: formatTimestampToDate(selectedUser.birthday) || "",
+				gender: selectedUser.gender ?? "0",
 			});
 		}
 	}, [selectedUser]);
@@ -47,27 +50,95 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		try {
 			const userId = selectedUser?.userId;
 			if (!userId) return;
+			const phoneRegex = /^[0-9]{10,11}$/;
+			if (!phoneRegex.test(userForm.phone.trim())) {
+				toast.error("Please enter a valid phone number (10-11 digits)", {
+					duration: 3000,
+					position: "top-right",
+					style: {
+						background: "#ef4444",
+						color: "#fff",
+						padding: "16px",
+					},
+				});
+				return;
+			}
+			if (userForm.fullName.trim().length < 2) {
+				toast.error("Full name must be at least 2 characters", {
+					duration: 3000,
+					position: "top-right",
+					style: {
+						background: "#ef4444",
+						color: "#fff",
+						padding: "16px",
+					},
+				});
+				return;
+			}
+			const dateTimestamp = new Date(userForm.birthday).getTime();
+			if (isNaN(dateTimestamp)) {
+				toast.error("Invalid date format", {
+					duration: 3000,
+					position: "top-right",
+					style: {
+						background: "#ef4444",
+						color: "#fff",
+						padding: "16px",
+					},
+				});
+				return;
+			}
+
+			const validatedGender = Number(userForm.gender) === 1 ? 1 : 0;
 
 			const payload: UserUpdateDto = {
-				...userForm,
-				birthday: new Date(userForm.birthday).toISOString(),
-				gender: Number(userForm.gender),
+				phone: userForm.phone.trim(),
+				fullName: userForm.fullName.trim(),
+				birthday: formatDateToDMY(userForm.birthday),
+				gender: userForm.gender,
 			};
 
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
+
 			if (!updatedUser) {
-				throw new Error("Failed to update user");
+				throw new Error("No response from server");
 			}
+			toast.success("User updated successfully!", {
+				duration: 3000,
+				position: "top-right",
+				style: {
+					background: "#22c55e",
+					color: "#fff",
+					padding: "16px",
+				},
+			});
 
 			const freshData = await userServices.getAll("/users");
-			setData(Array.isArray(freshData) ? freshData : []);
+			if (Array.isArray(freshData)) {
+				setData(freshData);
 
-			alert("User updated successfully!");
-			setSelectedUser(null);
-			setIsCreate(false);
+				setSelectedUser(null);
+				setIsCreate(false);
+			}
 		} catch (error) {
 			console.error("Update failed:", error);
-			alert("Failed to update user.");
+
+			let errorMessage = "Failed to update user";
+			if (error instanceof Error) {
+				errorMessage = error.message;
+			} else if (axios.isAxiosError(error) && error.response) {
+				errorMessage = error.response.data?.message || "Server error occurred";
+			}
+
+			toast.error(errorMessage, {
+				duration: 3000,
+				position: "top-right",
+				style: {
+					background: "#ef4444",
+					color: "#fff",
+					padding: "16px",
+				},
+			});
 		}
 	};
 
@@ -99,7 +170,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					label="Full Name"
 					labelPlacement="outside"
 					placeholder="Enter full name"
-					value={userForm.fullName}
+					value={userForm.fullName || ""}
 					onChange={handleChange}
 				/>
 				<Input
@@ -107,9 +178,11 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					name="phone"
 					label="Phone"
 					labelPlacement="outside"
-					placeholder="Enter phone"
-					value={userForm.phone}
+					placeholder="Enter phone number"
+					value={userForm.phone || ""}
 					onChange={handleChange}
+					pattern="[0-9]{10,11}"
+					title="Phone number must be 10-11 digits"
 				/>
 				<Input
 					isRequired
@@ -121,6 +194,21 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					onChange={handleChange}
 				/>
 
+				<RadioGroup
+					label="Gender"
+					className="flex w-full items-start justify-start"
+					orientation="horizontal"
+					value={userForm.gender.toString()}
+					onChange={(value) => {
+						setUserForm((prev) => ({
+							...prev,
+							gender: value as unknown as string,
+						}));
+					}}
+				>
+					<Radio value="1">Male</Radio>
+					<Radio value="0">Female</Radio>
+				</RadioGroup>
 				<div className="flex w-full justify-end gap-4">
 					<Button
 						onPress={() => {
@@ -132,6 +220,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 						Cancel
 					</Button>
 					<Button
+						onPress={handleEdit}
 						color="primary"
 						type="submit"
 					>

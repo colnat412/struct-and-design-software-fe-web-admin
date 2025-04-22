@@ -12,6 +12,7 @@ import axios from "axios";
 import { UserServices } from "@/api";
 import { IErrorAuth, IUser } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const Login = () => {
@@ -31,6 +32,7 @@ const Login = () => {
 	});
 
 	const [user, setUser] = useState<IUser | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const router = useRouter();
 
@@ -100,23 +102,56 @@ const Login = () => {
 	};
 
 	const handleLogin = async () => {
-		const token = await UserServices.signIn(username, password);
+		if (!checkUsername() || !checkPassword()) {
+			router.push("/login");
+			return;
+		}
 
-		if (checkUsername() && checkPassword()) {
-			if (token) router.push("/dashboard/user");
-			else {
-				setError({
-					isError: {
-						...error.isError,
-						isLogin: true,
+		setIsLoading(true);
+		try {
+			const result = await UserServices.signIn(username, password);
+
+			if (result) {
+				toast.success("Login successful!", {
+					duration: 3000,
+					position: "top-right",
+					style: {
+						background: "#22c55e",
+						color: "#fff",
+						padding: "16px",
 					},
-					errorMessages: {
-						...error.errorMessages,
-						isLogin: "Username or password is incorrect",
+				});
+				router.push("/dashboard/user");
+			} else {
+				toast.error("Username or password is incorrect", {
+					duration: 3000,
+					position: "top-right",
+					style: {
+						background: "#ef4444",
+						color: "#fff",
+						padding: "16px",
 					},
 				});
 			}
-		} else router.push("/login");
+		} catch (err: unknown) {
+			toast.error("An error occurred during login", {
+				duration: 3000,
+				position: "top-right",
+				style: {
+					background: "#ef4444",
+					color: "#fff",
+					padding: "16px",
+				},
+			});
+
+			if (err instanceof Error) {
+				console.error("Login error:", err.message);
+			} else {
+				console.error("Unknown login error:", err);
+			}
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -177,9 +212,33 @@ const Login = () => {
 				className="text-md bg-[#ff4336] font-semibold max-lg:w-5/6 lg:w-1/4"
 				variant="solid"
 				size="lg"
+				isLoading={isLoading}
+				spinner={
+					<svg
+						className="h-5 w-5 animate-spin text-white"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+					>
+						<circle
+							className="opacity-25"
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="currentColor"
+							strokeWidth="4"
+						/>
+						<path
+							className="opacity-75"
+							fill="currentColor"
+							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+						/>
+					</svg>
+				}
 			>
-				Sign in
+				{isLoading ? "Signing in..." : "Sign in"}
 			</Button>
+			{error.isError.isLogin && <div className="text-sm text-red-500">{error.errorMessages.isLogin}</div>}
 		</div>
 	);
 };

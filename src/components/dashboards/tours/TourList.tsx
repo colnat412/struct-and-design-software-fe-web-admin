@@ -95,7 +95,7 @@ export const TourList = () => {
 	return (
 		<div
 			ref={containerRef}
-			className="flex h-[calc(100vh-100px)] w-full overflow-hidden"
+			className="flex size-full overflow-hidden"
 		>
 			<div
 				className="flex flex-col gap-3 overflow-auto p-4"
@@ -196,7 +196,7 @@ export const TourList = () => {
 										: "bg-gray-300 hover:bg-gray-400"
 								}`}
 							>
-								Prev
+								Back
 							</Button>
 							{Array.from({ length: totalPages }, (_, i) => (
 								<Button

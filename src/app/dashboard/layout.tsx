@@ -28,12 +28,24 @@ const lato = Lato({
 
 const userServices = new UserServices(ServiceConstants.USER_SERVICE);
 
+interface UserResponse {
+	email: string;
+	phone: string;
+	username: string;
+	fullName: string;
+	avatarUrl: string;
+	birthday: number;
+	gender: number;
+	role: string;
+	userId: string;
+}
+
 export default function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const [data, setData] = useState<UserResponseDto>();
+	const [data, setData] = useState<UserResponse>();
 	const router = useRouter();
 	const handleLogout = () => {
 		localStorage.removeItem("token");
@@ -46,16 +58,19 @@ export default function RootLayout({
 			router.push("/login");
 			return;
 		}
-		// const fetchData = async () => {
-		// 	// get data return after login success
-		// 	try {
-		// 		const user = await userServices.getById("/users/me", token);
-		// 		setData(user);
-		// 	} catch (error) {
-		// 		console.error("Error fetching user:", error);
-		// 	}
-		// };
-		// fetchData();
+		const fetchData = async () => {
+			const user = localStorage.getItem("user");
+			try {
+				if (user) {
+					setData(JSON.parse(user) as UserResponse);
+				} else {
+					console.error("No user data found in localStorage");
+				}
+			} catch (error) {
+				console.error("Error fetching user:", error);
+			}
+		};
+		fetchData();
 	}, []);
 
 	return (
@@ -68,7 +83,7 @@ export default function RootLayout({
 							width={200}
 							height={200}
 						/>
-						<span className="font-semibold">Welcome back, ?</span>
+						<span className="font-semibold">Welcome, {data?.fullName}</span>
 						<Menu />
 						<div className="my-2 flex w-full flex-col items-center gap-4">
 							<Button

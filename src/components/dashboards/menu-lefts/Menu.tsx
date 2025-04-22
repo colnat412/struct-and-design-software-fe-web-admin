@@ -36,18 +36,6 @@ export const Menu = () => {
 		},
 		{
 			id: 2,
-			title: "Booking",
-			icon: (isSelected: boolean) => (
-				<LocationIcon
-					width={40}
-					height={40}
-					className={isSelected ? "text-white" : "text-black"}
-				/>
-			),
-			path: "/booking",
-		},
-		{
-			id: 3,
 			title: "Tour",
 			icon: (isSelected: boolean) => (
 				<FlyIcon
@@ -57,6 +45,18 @@ export const Menu = () => {
 				/>
 			),
 			path: "/dashboard/tour",
+		},
+		{
+			id: 3,
+			title: "Booking",
+			icon: (isSelected: boolean) => (
+				<LocationIcon
+					width={40}
+					height={40}
+					className={isSelected ? "text-white" : "text-black"}
+				/>
+			),
+			path: "/booking",
 		},
 	];
 

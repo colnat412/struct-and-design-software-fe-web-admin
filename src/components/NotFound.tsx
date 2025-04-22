@@ -1,6 +1,6 @@
 "use client";
 
-import { NotFoundIcon } from "@/assets/svgs/common";
+import { ConstructionIcon, NotFoundIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Metadata } from "next";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ export const NotFoundComponent = () => {
 			<span className="text-2xl text-secondary">
 				This page is under construction and will be coming to you soon.
 			</span>
-			<NotFoundIcon
+			<ConstructionIcon
 				width={256}
 				height={256}
 			/>

@@ -17,9 +17,10 @@ export class UserServices extends BaseService<UserResponseDto> {
 				username,
 				password,
 			});
-			const { token } = res.data.data;
+			const { token, user } = res.data.data;
 			localStorage.setItem("token", token);
-			return token;
+			localStorage.setItem("user", JSON.stringify(user));
+			return res.data;
 		} catch (error) {
 			throw error;
 		}

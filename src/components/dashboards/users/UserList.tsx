@@ -7,7 +7,7 @@ import { Button } from "@heroui/button";
 import { TrashIconn, SearchIcon } from "@/assets/svgs/common";
 import { UserDetails } from "./UserDetails";
 import { UserResponseDto, UserServices, ServiceConstants } from "@/api";
-import { formatDate } from "@/utils/api";
+import { formatDateToDisplay } from "@/utils/api";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -43,7 +43,6 @@ export const UserPage = () => {
 			try {
 				setIsLoading(true);
 				const users = await userServices.getAll("/users");
-				console.log("Fetched users:", users);
 
 				setData(Array.isArray(users) ? users : []);
 			} catch (error) {
@@ -95,7 +94,7 @@ export const UserPage = () => {
 	return (
 		<div
 			ref={containerRef}
-			className="flex h-[calc(100vh-100px)] w-full overflow-hidden"
+			className="flex h-full w-full overflow-hidden"
 		>
 			<div
 				className="flex flex-col gap-3 overflow-auto p-4"
@@ -164,16 +163,18 @@ export const UserPage = () => {
 										<TableCell>{user.email}</TableCell>
 										<TableCell>{user.fullName}</TableCell>
 										<TableCell>{user.phone}</TableCell>
-										<TableCell>{Number(user.gender) === 0 ? "Male" : "Female"}</TableCell>
-										<TableCell>
-											{formatDate(new Date(user.birthday).toDateString())}
-										</TableCell>
+										<TableCell>{Number(user.gender) === 1 ? "Male" : "Female"}</TableCell>
+										<TableCell>{formatDateToDisplay(user.birthday)}</TableCell>
 										<TableCell
 											className={
-												user.role.endsWith("R") ? "text-secondary" : "text-primary"
+												user.role?.endsWith("R")
+													? "text-secondary"
+													: user.role
+														? "text-primary"
+														: ""
 											}
 										>
-											{user.role}
+											{user.role || "N/A"}
 										</TableCell>
 										<TableCell width={20}>
 											<Button
@@ -200,7 +201,7 @@ export const UserPage = () => {
 										: "bg-gray-300 hover:bg-gray-400"
 								}`}
 							>
-								Prev
+								Back
 							</Button>
 							{Array.from({ length: totalPages }, (_, i) => (
 								<Button

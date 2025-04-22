@@ -14,5 +14,5 @@ export interface UserUpdateDto {
 	phone: string;
 	fullName: string;
 	birthday: string;
-	gender: number;
+	gender: string;
 }
