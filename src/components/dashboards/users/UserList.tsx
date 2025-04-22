@@ -165,7 +165,7 @@ export const UserPage = () => {
 										onClick={() => setSelectedUser(user)}
 										className="cursor-pointer hover:bg-gray-100"
 									>
-										<TableCell className="font-medium text-secondary underline">
+										<TableCell className="font-semibold text-secondary">
 											{user.username}
 										</TableCell>
 										<TableCell>{user.email}</TableCell>

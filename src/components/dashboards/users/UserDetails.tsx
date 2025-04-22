@@ -1,13 +1,13 @@
 "use client";
 
-import { ServiceConstants, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
+import { ServiceConstants, UserRequestDto, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
 import { formatDateToDMY, formatTimestampToDate } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -18,6 +18,7 @@ interface UserDetailProps {
 
 export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setData }: UserDetailProps) => {
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
+	const fileInputRef = useRef<HTMLInputElement | null>(null); // Tham chiếu đến input file
 
 	const [userForm, setUserForm] = useState<UserUpdateDto>({
 		phone: "",
@@ -25,18 +26,22 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		birthday: "",
 		gender: "0",
 		password: "123456",
+		avatarUrl: "",
 	});
 
 	const [isCreating, setIsCreating] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (selectedUser) {
+			console.log("Selected user:", selectedUser);
+
 			setUserForm({
 				phone: selectedUser.phone ? String(selectedUser.phone) : "",
 				fullName: selectedUser.fullName || "",
 				birthday: formatTimestampToDate(selectedUser.birthday) || "",
 				gender: String(selectedUser.gender || "0"),
 				password: "",
+				avatarUrl: selectedUser.avatarUrl || "",
 			});
 			setIsCreating(false);
 		} else {
@@ -46,6 +51,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				birthday: "",
 				gender: "0",
 				password: "123456",
+				avatarUrl: "",
 			});
 			setIsCreating(true);
 		}
@@ -57,6 +63,26 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			...prev,
 			[name]: value,
 		}));
+	};
+
+	const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setUserForm((prev) => ({
+					...prev,
+					avatarUrl: reader.result as string,
+				}));
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const handleAvatarClick = () => {
+		if (fileInputRef.current) {
+			fileInputRef.current.click();
+		}
 	};
 
 	const handleEdit = async () => {
@@ -107,10 +133,13 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				fullName: userForm.fullName.trim(),
 				birthday: formatDateToDMY(userForm.birthday),
 				gender: userForm.gender,
-				...(selectedUser ? {} : { password: userForm.password }), // Chỉ gửi password khi tạo mới
+				...(selectedUser ? {} : { password: userForm.password }),
+				avatarUrl: userForm.avatarUrl,
 			};
+			console.log("Payload:", payload);
 
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
+			console.log("Updated user:", updatedUser);
 
 			if (!updatedUser) {
 				throw new Error("No response from server");
@@ -151,6 +180,11 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		}
 	};
 
+	const handleAddNew = async () => {
+		try {
+		} catch (error) {}
+	};
+
 	return (
 		<Form
 			className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4"
@@ -161,6 +195,33 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 		>
 			<span className="mx-1 font-semibold">User Information</span>
 			<div className="flex w-full flex-col gap-5">
+				<div className="flex flex-col gap-3">
+					<label className="font-medium">Avatar</label>
+					<div
+						className="h-32 w-32 cursor-pointer overflow-hidden rounded-full"
+						onClick={handleAvatarClick}
+					>
+						{userForm.avatarUrl ? (
+							<img
+								src={userForm.avatarUrl}
+								alt="Avatar Preview"
+								className="h-full w-full object-cover"
+							/>
+						) : (
+							<div className="flex h-full w-full items-center justify-center bg-gray-300 text-sm">
+								Add a image
+							</div>
+						)}
+					</div>
+					<input
+						type="file"
+						accept="image/*"
+						ref={fileInputRef}
+						onChange={handleAvatarChange}
+						className="hidden"
+					/>
+				</div>
+
 				<Input
 					label="Username"
 					labelPlacement="outside"
@@ -211,7 +272,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 						label="Password"
 						labelPlacement="outside"
 						placeholder="Enter password"
-						type="text"
+						type="password"
 						defaultValue="123456"
 						value={userForm.password}
 						onChange={handleChange}

@@ -62,6 +62,18 @@ export default class BaseService<T> {
 		}
 	}
 
+	async updateAdmin(id: string | number, data: T, url_api: string): Promise<T> {
+		try {
+			const response = await api.put<T>(`${this.endpoint + url_api}/${id}/avatar`, data, {
+				headers: this.getAuthHeader(),
+			});
+			return response.data;
+		} catch (error) {
+			console.error(`Error updating data with ID ${id}:`, error);
+			throw error;
+		}
+	}
+
 	async delete(id: string | number, url_api: string): Promise<void> {
 		try {
 			const response = await api.delete<ApiResponse<T>>(`${this.endpoint + url_api}/${id}`, {
