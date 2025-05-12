@@ -136,8 +136,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				await UserServices.uploadAvatar(userId, avatarFile);
 			}
 
-			toast.success("User updated successfully!");
-
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
 				setData(freshData);
