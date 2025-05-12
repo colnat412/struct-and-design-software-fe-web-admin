@@ -26,7 +26,8 @@ interface UserDetailProps {
 
 export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setData }: UserDetailProps) => {
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
-	const fileInputRef = useRef<HTMLInputElement | null>(null); // Tham chiếu đến input file
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
 	const [userForm, setUserForm] = useState<UserUpdateDto>({
 		username: "",
@@ -88,6 +89,8 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				}));
 			};
 			reader.readAsDataURL(file);
+
+			setAvatarFile(file);
 		}
 	};
 
@@ -128,6 +131,11 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			if (!updatedUser) {
 				throw new Error("No response from server");
 			}
+
+			if (avatarFile) {
+				await UserServices.uploadAvatar(userId, avatarFile);
+			}
+
 			toast.success("User updated successfully!");
 
 			const freshData = await userServices.getAll("/users");
@@ -163,7 +171,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				toast.error("Invalid date format");
 				return;
 			}
-			console.log("User Form:", userForm);
 
 			const payload = {
 				username: userForm.username.trim(),
@@ -171,16 +178,22 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				email: userForm.email.trim(),
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
-				avatarUrl: userForm.avatarUrl || "",
+				avatarUrl: "",
 				birthday: formatBirthdayToDMY(userForm.birthday),
 				gender: parseInt(userForm.gender),
 				role: "USER",
 			};
-			console.log("Payload:", payload);
 
 			const newUser = await userServices.create(payload as any, "/users/register");
-			if (!newUser) {
+
+			if (!newUser?.userId) {
 				throw new Error("Failed to create user");
+			}
+
+			if (avatarFile) {
+				const formData = new FormData();
+				formData.append("avatar", avatarFile);
+				await UserServices.uploadAvatar(newUser.userId, avatarFile);
 			}
 
 			toast.success("User created successfully!");
@@ -192,6 +205,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				setIsCreate(false);
 			}
 		} catch (error) {
+			console.error(error);
 			toast.error("Failed to create user");
 		}
 	};

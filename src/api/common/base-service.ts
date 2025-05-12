@@ -10,7 +10,6 @@ export default class BaseService<T> {
 
 	private getAuthHeader() {
 		const token = localStorage.getItem("token");
-		console.log("Token fetched:", token);
 		return token ? { Authorization: `Bearer ${token}` } : {};
 	}
 
