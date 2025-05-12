@@ -9,13 +9,13 @@ import {
 	isValidDate,
 	isValidEmail,
 	isNonEmpty,
+	formatBirthdayToDMY,
 } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
 import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -102,7 +102,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			const userId = selectedUser?.userId;
 			if (!userId) return;
 
-			// Sử dụng các hàm xác thực từ file validators.ts
 			if (!isValidPhone(userForm.phone)) {
 				toast.error("Please enter a valid phone number (10-11 digits)");
 				return;
@@ -119,7 +118,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			const payload: UserUpdateDto = {
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
-				birthday: userForm.birthday,
+				birthday: formatBirthdayToDMY(userForm.birthday),
 				gender: userForm.gender,
 				...(selectedUser ? {} : { password: userForm.password }),
 				avatarUrl: userForm.avatarUrl,
@@ -144,7 +143,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 
 	const handleAddNew = async () => {
 		try {
-			// Sử dụng các hàm xác thực từ file validators.ts
 			if (!userForm.username?.trim()) {
 				toast.error("Username is required");
 				return;
@@ -165,6 +163,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				toast.error("Invalid date format");
 				return;
 			}
+			console.log("User Form:", userForm);
 
 			const payload = {
 				username: userForm.username.trim(),
@@ -173,10 +172,11 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
 				avatarUrl: userForm.avatarUrl || "",
-				birthday: new Date(userForm.birthday).toISOString(),
+				birthday: formatBirthdayToDMY(userForm.birthday),
 				gender: parseInt(userForm.gender),
 				role: "USER",
 			};
+			console.log("Payload:", payload);
 
 			const newUser = await userServices.create(payload as any, "/users/register");
 			if (!newUser) {

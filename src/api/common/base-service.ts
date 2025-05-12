@@ -16,6 +16,8 @@ export default class BaseService<T> {
 
 	async create(data: T, url_api: string): Promise<T> {
 		try {
+			console.log("Endpoint:", this.endpoint + url_api);
+
 			const response = await api.post<ApiResponse<T>>(this.endpoint + url_api, data, {
 				headers: this.getAuthHeader(),
 			});
@@ -30,6 +32,19 @@ export default class BaseService<T> {
 		try {
 			const response = await api.get<ApiResponse<T>>(this.endpoint + url_api, {
 				headers: this.getAuthHeader(),
+			});
+			return response.data.data;
+		} catch (error) {
+			console.error("Error fetching data:", error);
+			throw error;
+		}
+	}
+
+	async search(data: T, url_api: string): Promise<T> {
+		try {
+			const response = await api.get<ApiResponse<T>>(this.endpoint + url_api, {
+				headers: this.getAuthHeader(),
+				params: data,
 			});
 			return response.data.data;
 		} catch (error) {

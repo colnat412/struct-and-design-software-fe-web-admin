@@ -251,7 +251,7 @@ export const UserPage = () => {
 					/>
 					<div
 						className="relative overflow-auto p-4"
-						style={{ width: `${100 - leftWidth}%`, minWidth: "20%" }} // Thêm minWidth
+						style={{ width: `${100 - leftWidth}%`, minWidth: "20%" }}
 					>
 						<UserDetails
 							selectedUser={selectedUser}
