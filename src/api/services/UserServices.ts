@@ -83,4 +83,19 @@ export class UserServices extends BaseService<UserResponseDto> {
 			throw error;
 		}
 	}
+
+	public static async search(searchParams: Record<string, string>, token: string) {
+		try {
+			const res = await axios.get(`${apiUrl}/user-service/users/search`, {
+				data: searchParams,
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			return res.data.data;
+		} catch (error) {
+			throw error;
+		}
+	}
 }

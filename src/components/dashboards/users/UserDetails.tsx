@@ -181,8 +181,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				gender: parseInt(userForm.gender),
 				role: "USER",
 			};
+			console.log("Creating new user with payload:", payload);
 
 			const newUser = await userServices.create(payload as any, "/users/register");
+			console.log("New user response:", newUser);
 
 			if (!newUser?.userId) {
 				throw new Error("Failed to create user");

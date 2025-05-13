@@ -30,6 +30,7 @@ export const UserPage = () => {
 
 	const router = useRouter();
 	const pathname = usePathname();
+	const [searchTerm, setSearchTerm] = useState<string>("");
 
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
 
@@ -95,6 +96,37 @@ export const UserPage = () => {
 		}
 	};
 
+	const handleSearch = async () => {
+		try {
+			const token = localStorage.getItem("token");
+			if (!token) {
+				router.push("/login");
+				return;
+			}
+
+			const response = await fetch(`${ServiceConstants.USER_SERVICE}/users/search`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify({
+					fullName: searchTerm,
+				}),
+			});
+
+			const result = await response.json();
+			setData(result.data);
+		} catch (error) {
+			console.error("Search failed:", error);
+		}
+	};
+
+	const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setSearchTerm(value);
+	};
+
 	return (
 		<div
 			ref={containerRef}
@@ -120,8 +152,10 @@ export const UserPage = () => {
 						variant="faded"
 						className="w-1/3"
 						placeholder="Search ..."
+						onChange={handleSearchChange}
 					/>
 					<Button
+						onPress={handleSearch}
 						radius="none"
 						className="rounded-sm bg-primary font-semibold text-white"
 					>
