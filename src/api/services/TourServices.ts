@@ -11,6 +11,7 @@ export class TourServices extends BaseService<TourResponseDto> {
 	}
 
 	public static async searchTour() {}
+
 	// public static async getAllTours(token: string): Promise<TourResponseDto[]> {
 	// 	try {
 	// 		const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours`, {});

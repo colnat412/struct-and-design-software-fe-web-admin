@@ -1,17 +1,26 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
+import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@heroui/input";
-import { Button } from "@heroui/button";
-import { TrashIconn, SearchIcon } from "@/assets/svgs/common";
-import { UserServices, ServiceConstants, TourResponseDto, TourServices } from "@/api";
-import { Image } from "@heroui/image";
-import { TourDetails } from "./TourDetails";
 import { FormatNumber } from "@/utils/api";
+import { Button } from "@heroui/button";
+import { Image } from "@heroui/image";
+import { Input } from "@heroui/input";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { TourDetails } from "./TourDetails";
+import { set } from "lodash";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
+
+type Category = { id: string; name: string };
+const categories: Category[] = [
+	{ id: "beach", name: "Beach" },
+	{ id: "adventure", name: "Adventure" },
+	{ id: "cultural", name: "Cultural" },
+];
 
 export const TourList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +43,22 @@ export const TourList = () => {
 
 	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 
+	const [isFilterOpen, setIsFilterOpen] = useState(false);
+	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
+
+	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
+
+	const toggleCategory = (category: string) => {
+		setSelectedCategories((prev) =>
+			prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
+		);
+	};
+
+	const handleApplyFilter = () => {
+		setIsFilterOpen(false);
+		// Nếu bạn muốn lọc dữ liệu thực, cập nhật state lọc ở đây
+	};
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
@@ -43,8 +68,12 @@ export const TourList = () => {
 		const fetchData = async () => {
 			try {
 				setIsLoading(true);
-				const users = await tourServices.getAll("/tours");
-				setData(Array.isArray(users) ? users : []);
+				const tours = await tourServices.getAll("/tours");
+				const categories = await tourServices.getAll("/category-tours");
+				console.log("Categories:", categories);
+
+				setData(Array.isArray(tours) ? tours : []);
+				setCategories(Array.isArray(categories) ? categories : []);
 			} catch (error) {
 				console.error("Error fetching users:", error);
 			} finally {
@@ -115,6 +144,7 @@ export const TourList = () => {
 						className="w-1/3"
 						placeholder="Search ..."
 					/>
+
 					<Button
 						radius="none"
 						className="rounded-sm bg-primary font-semibold text-white"
@@ -131,6 +161,12 @@ export const TourList = () => {
 					>
 						Add new tour
 					</Button>
+					<Button
+						startContent={<FilterIcon />}
+						onPress={() => setIsFilterOpen(true)}
+						radius="none"
+						className="rounded-sm bg-primary"
+					></Button>
 				</div>
 
 				{isLoading ? (
@@ -147,6 +183,7 @@ export const TourList = () => {
 									<TableHead className="font-bold">Description</TableHead>
 									<TableHead className="font-bold">Duration</TableHead>
 									<TableHead className="font-bold">Price</TableHead>
+									<TableHead className="font-bold">Category</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -156,9 +193,9 @@ export const TourList = () => {
 										onClick={() => setSelectedTour(tour)}
 										className="cursor-pointer hover:bg-gray-100"
 									>
-										<TableCell width={200}>
+										<TableCell width={128}>
 											<Image
-												width={200}
+												width={100}
 												src={tour.thumbnail}
 											/>
 										</TableCell>
@@ -170,6 +207,7 @@ export const TourList = () => {
 										</TableCell>
 										<TableCell width={500}>{tour.description}</TableCell>
 										<TableCell width={200}>{tour.duration}</TableCell>
+										<TableCell>{FormatNumber.toFormatNumber(tour.price ?? 0)}đ</TableCell>
 										<TableCell>{FormatNumber.toFormatNumber(tour.price ?? 0)}đ</TableCell>
 										<TableCell width={20}>
 											<Button
@@ -248,6 +286,96 @@ export const TourList = () => {
 					</div>
 				</>
 			)}
+			<Modal
+				isOpen={isFilterOpen}
+				onOpenChange={setIsFilterOpen}
+			>
+				<ModalContent>
+					{(onClose) => (
+						<>
+							<ModalHeader className="flex flex-col gap-1">Filter</ModalHeader>
+							<ModalBody className="flex flex-col gap-4">
+								<div>
+									<p className="mb-2 font-semibold">Category Tour:</p>
+									<div className="flex flex-wrap gap-2">
+										{categories.map((category) => (
+											<Button
+												key={category.categoryTourId}
+												variant={
+													selectedCategories.includes(category.categoryTourId)
+														? "solid"
+														: "bordered"
+												}
+												color={
+													selectedCategories.includes(category.categoryTourId)
+														? "primary"
+														: "default"
+												}
+												onPress={() => toggleCategory(category.categoryTourId)}
+												className="rounded-full text-sm"
+											>
+												{category.name}
+											</Button>
+										))}
+									</div>
+								</div>
+
+								<div>
+									<p className="mb-2 font-semibold">Range price(VNĐ):</p>
+									<div className="flex items-center gap-3">
+										<input
+											type="number"
+											min={0}
+											max={priceRange[1]}
+											value={priceRange[0]}
+											onChange={(e) =>
+												setPriceRange([
+													Math.min(Number(e.target.value), priceRange[1]),
+													priceRange[1],
+												])
+											}
+											className="w-1/2 rounded border px-2 py-1"
+											placeholder="Min price"
+										/>
+										<span>—</span>
+										<input
+											type="number"
+											min={priceRange[0]}
+											value={priceRange[1]}
+											onChange={(e) =>
+												setPriceRange([
+													priceRange[0],
+													Math.max(Number(e.target.value), priceRange[0]),
+												])
+											}
+											className="w-1/2 rounded border px-2 py-1"
+											placeholder="Max price"
+										/>
+									</div>
+								</div>
+							</ModalBody>
+							<ModalFooter>
+								<Button
+									color="danger"
+									variant="light"
+									onPress={onClose}
+								>
+									Hủy
+								</Button>
+								<Button
+									color="primary"
+									onPress={() => {
+										handleApplyFilter();
+										onClose();
+									}}
+								>
+									Áp dụng
+								</Button>
+							</ModalFooter>
+						</>
+					)}
+				</ModalContent>
+			</Modal>
 		</div>
 	);
 };
