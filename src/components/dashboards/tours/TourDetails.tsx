@@ -102,11 +102,11 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 					labelPlacement="outside"
 					name="price"
 					placeholder="Enter your price"
-					type="number"
-					value={selectedTour?.price?.toString() || "0"}
+					type="text"
+					inputMode="numeric"
+					value={FormatNumber.formatCurrency(selectedTour?.price ?? 0).toString()}
 				/>
 
-				{/* Buttons */}
 				<div className="flex w-full justify-end gap-4">
 					<Button
 						onPress={() => {

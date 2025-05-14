@@ -232,7 +232,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 							/>
 						) : (
 							<div className="flex h-full w-full items-center justify-center bg-gray-300 text-sm">
-								Add a image
+								Choose a image
 							</div>
 						)}
 					</div>

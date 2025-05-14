@@ -1,11 +1,11 @@
 export interface TourResponseDto {
-	id: string;
+	tourId: string;
 	name: string;
 	description: string;
 	price: number;
 	thumbnail: string;
 	duration: string;
-	categoryName: string;
+	categoryTour: CategoryResponseDto;
 }
 
 export interface CategoryResponseDto {

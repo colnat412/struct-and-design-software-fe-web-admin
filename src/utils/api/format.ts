@@ -44,4 +44,8 @@ export class FormatNumber {
 	public static toFormatNumber(num: number): string {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 	}
+
+	public static formatCurrency = (value: number) => {
+		return new Intl.NumberFormat("vi-VN").format(value);
+	};
 }
