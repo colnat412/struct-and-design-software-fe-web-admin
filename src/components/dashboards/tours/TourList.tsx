@@ -126,8 +126,6 @@ export const TourList = () => {
 		}
 	};
 
-	const handleFilter = async (categoryId: string) => {};
-
 	const handleDeleteTour = async (id: string) => {
 		try {
 			console.log("Deleting tour with ID:", id);
@@ -204,7 +202,7 @@ export const TourList = () => {
 						radius="sm"
 						variant="faded"
 						className="w-1/3"
-						placeholder="Search ..."
+						placeholder="Name, description, duration,..."
 						onChange={(e) => {
 							setSearchInput(e.target.value);
 						}}

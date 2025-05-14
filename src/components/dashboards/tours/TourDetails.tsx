@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ServiceConstants, TourResponseDto, TourServices } from "@/api";
+import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { Form } from "@heroui/react";
+import { useRouter } from "next/navigation";
+import BrowseTourModal from "@/components/modals/BrowseTourModal";
 
 interface TourDetailProps {
 	selectedTour: TourResponseDto | null;
@@ -14,10 +16,18 @@ interface TourDetailProps {
 }
 
 export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: TourDetailProps) => {
+	const router = useRouter();
+
 	const bookingServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 
 	const [thumbnail, setThumbnail] = useState<string | undefined>(selectedTour?.thumbnail);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
+
+	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		setThumbnail(selectedTour?.thumbnail);
@@ -37,7 +47,23 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 		}
 	};
 
-	const handleEditTour = () => {};
+	useEffect(() => {
+		const token = localStorage.getItem("token");
+		if (!token) {
+			router.push("/login");
+			return;
+		}
+		const fetchData = async () => {
+			try {
+				const categories = await tourServices.getAll("/category-tours");
+				setCategories(Array.isArray(categories) ? categories : []);
+			} catch (error) {
+				console.error("Error fetching users:", error);
+				throw error;
+			}
+		};
+		fetchData();
+	}, []);
 
 	return (
 		<Form className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4">
@@ -106,8 +132,28 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 					inputMode="numeric"
 					value={FormatNumber.formatCurrency(selectedTour?.price ?? 0).toString()}
 				/>
+				<select
+					name=""
+					id=""
+				>
+					{categories.map((category) => (
+						<option
+							key={category.categoryTourId}
+							value={category.categoryTourId}
+							selected={selectedTour?.categoryTour.categoryTourId === category.categoryTourId}
+						>
+							{category.name}
+						</option>
+					))}
+				</select>
 
 				<div className="flex w-full justify-end gap-4">
+					<Button
+						color="secondary"
+						onPress={() => setIsModalOpen(true)}
+					>
+						Browse Tour
+					</Button>
 					<Button
 						onPress={() => {
 							setSelectedTour(null);
@@ -119,12 +165,18 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 					<Button
 						color="primary"
 						type="submit"
-						onPress={handleEditTour}
+						// onPress={() => {}}
 					>
 						Save
 					</Button>
 				</div>
 			</div>
+			<BrowseTourModal
+				tourName={selectedTour?.name || ""}
+				duration={selectedTour?.duration || ""}
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
+			/>
 		</Form>
 	);
 };
