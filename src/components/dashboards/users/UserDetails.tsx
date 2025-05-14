@@ -1,20 +1,11 @@
 "use client";
 
-import { ServiceConstants, UserRequestDto, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
-import {
-	formatDateToDMY,
-	formatTimestampToDate,
-	isValidPhone,
-	isValidFullName,
-	isValidDate,
-	isValidEmail,
-	isNonEmpty,
-	formatBirthdayToDMY,
-} from "@/utils/api";
+import { ServiceConstants, UserResponseDto, UserServices, UserUpdateDto } from "@/api";
+import { formatBirthdayToDMY, formatTimestampToDate, isValidDate, isValidFullName, isValidPhone } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 
 interface UserDetailProps {

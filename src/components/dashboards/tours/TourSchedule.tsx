@@ -50,7 +50,7 @@ export default function TourSchedules({ schedules, setSchedules }: TourSchedules
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Schedules</h3>
+				<h3 className="text-lg font-semibold">Tour Schedules</h3>
 				<Button
 					size="sm"
 					onPress={handleAdd}

@@ -1,18 +1,17 @@
 "use client";
 import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
+import { ConfirmDeleteModal } from "@/components/modals";
+import FilterModal from "@/components/modals/FilterModal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TourDetails } from "./TourDetails";
-import { set } from "lodash";
-import FilterModal from "@/components/modals/FilterModal";
-import { ConfirmDeleteModal } from "@/components/modals";
+import BrowseTourModal from "@/components/modals/BrowseTourModal";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -54,6 +53,8 @@ export const TourList = () => {
 	const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
 	const [tourToDelete, setTourToDelete] = useState<TourResponseDto | null>(null);
 
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
 	const toggleCategory = (category: string) => {
 		setSelectedCategories((prev) =>
 			prev.includes(category) ? prev.filter((c) => c !== category) : [...prev, category],
@@ -88,25 +89,6 @@ export const TourList = () => {
 		};
 		fetchData();
 	}, []);
-
-	const handleMouseDown = () => {
-		const handleMouseMove = (e: MouseEvent) => {
-			if (!containerRef.current) return;
-			const containerRect = containerRef.current.getBoundingClientRect();
-			const newLeftWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
-			if (newLeftWidth > 20 && newLeftWidth < 80) {
-				setLeftWidth(newLeftWidth);
-			}
-		};
-
-		const handleMouseUp = () => {
-			document.removeEventListener("mousemove", handleMouseMove);
-			document.removeEventListener("mouseup", handleMouseUp);
-		};
-
-		document.addEventListener("mousemove", handleMouseMove);
-		document.addEventListener("mouseup", handleMouseUp);
-	};
 
 	const handleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
@@ -181,14 +163,19 @@ export const TourList = () => {
 		setPriceRange(newRange);
 	};
 
+	const handleOpenDetails = (tour: TourResponseDto) => {
+		setSelectedTour(tour);
+		setIsModalOpen(true);
+	};
+
 	return (
 		<div
 			ref={containerRef}
 			className="flex size-full overflow-hidden"
 		>
 			<div
-				className="flex flex-col gap-3 overflow-auto p-4"
-				style={{ width: selectedTour ? `${leftWidth}%` : "100%" }}
+				className="flex w-full flex-col gap-3 overflow-auto p-4"
+				// style={{ width: selectedTour ? `${leftWidth}%` : "100%" }}
 			>
 				<span className="text-lg font-semibold">Tours Management</span>
 				<div className="mb-2 flex items-center gap-4">
@@ -255,7 +242,7 @@ export const TourList = () => {
 								{currentData.map((tour) => (
 									<TableRow
 										key={tour.tourId}
-										onClick={() => setSelectedTour(tour)}
+										onClick={() => handleOpenDetails(tour)}
 										className="cursor-pointer hover:bg-gray-100"
 									>
 										<TableCell width={128}>
@@ -333,25 +320,6 @@ export const TourList = () => {
 					</>
 				)}
 			</div>
-			{(selectedTour || isCreate) && (
-				<>
-					<div
-						onMouseDown={handleMouseDown}
-						className="relative z-10 w-2 cursor-col-resize bg-gray-300 hover:bg-gray-400"
-						style={{ height: "100%", minWidth: "6px" }}
-					/>
-					<div
-						className="relative overflow-auto p-4"
-						style={{ width: `${100 - leftWidth}%` }}
-					>
-						<TourDetails
-							selectedTour={selectedTour}
-							setSelectedTour={setSelectedTour}
-							setIsCreate={setIsCreate}
-						/>
-					</div>
-				</>
-			)}
 
 			<FilterModal
 				isOpen={isFilterOpen}
@@ -371,6 +339,12 @@ export const TourList = () => {
 				itemName={tourToDelete?.name}
 				onConfirm={confirmDelete}
 				onCancel={() => setTourToDelete(null)}
+			/>
+
+			<BrowseTourModal
+				selectedTour={selectedTour}
+				isOpen={isModalOpen}
+				onClose={() => setIsModalOpen(false)}
 			/>
 		</div>
 	);

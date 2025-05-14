@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Image from "next/image";
+import { ImageIcon } from "@/assets/svgs/common";
 import { X } from "lucide-react";
+import Image from "next/image";
+import { useRef } from "react";
 
 interface TourImagesProps {
 	images: string[];
@@ -32,7 +33,7 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h3 className="text-lg font-semibold">Images</h3>
+			<h3 className="text-lg font-semibold">Tour Images</h3>
 			<div className="flex flex-wrap gap-4">
 				{images.map((url, idx) => (
 					<div
@@ -56,9 +57,14 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 
 				<div
 					onClick={handleAddImage}
-					className="flex h-36 w-44 cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:bg-gray-50"
+					className="flex h-36 w-44 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 text-gray-500 hover:bg-gray-50"
 				>
-					Choose images
+					<ImageIcon
+						width={24}
+						height={24}
+						opacity={0.5}
+					/>
+					<p className="text-sm text-gray-500">Click to images</p>
 				</div>
 
 				<input
