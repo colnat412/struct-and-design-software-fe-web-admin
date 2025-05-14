@@ -9,13 +9,13 @@ import {
 	isValidDate,
 	isValidEmail,
 	isNonEmpty,
+	formatBirthdayToDMY,
 } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
 import { useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -26,7 +26,8 @@ interface UserDetailProps {
 
 export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setData }: UserDetailProps) => {
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
-	const fileInputRef = useRef<HTMLInputElement | null>(null); // Tham chiếu đến input file
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+	const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
 	const [userForm, setUserForm] = useState<UserUpdateDto>({
 		username: "",
@@ -88,6 +89,8 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				}));
 			};
 			reader.readAsDataURL(file);
+
+			setAvatarFile(file);
 		}
 	};
 
@@ -102,7 +105,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			const userId = selectedUser?.userId;
 			if (!userId) return;
 
-			// Sử dụng các hàm xác thực từ file validators.ts
 			if (!isValidPhone(userForm.phone)) {
 				toast.error("Please enter a valid phone number (10-11 digits)");
 				return;
@@ -119,7 +121,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			const payload: UserUpdateDto = {
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
-				birthday: userForm.birthday,
+				birthday: formatBirthdayToDMY(userForm.birthday),
 				gender: userForm.gender,
 				...(selectedUser ? {} : { password: userForm.password }),
 				avatarUrl: userForm.avatarUrl,
@@ -129,7 +131,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			if (!updatedUser) {
 				throw new Error("No response from server");
 			}
-			toast.success("User updated successfully!");
+
+			if (avatarFile) {
+				await UserServices.uploadAvatar(userId, avatarFile);
+			}
 
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
@@ -144,7 +149,6 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 
 	const handleAddNew = async () => {
 		try {
-			// Sử dụng các hàm xác thực từ file validators.ts
 			if (!userForm.username?.trim()) {
 				toast.error("Username is required");
 				return;
@@ -172,15 +176,22 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				email: userForm.email.trim(),
 				phone: userForm.phone.trim(),
 				fullName: userForm.fullName.trim(),
-				avatarUrl: userForm.avatarUrl || "",
-				birthday: new Date(userForm.birthday).toISOString(),
+				avatarUrl: "",
+				birthday: formatBirthdayToDMY(userForm.birthday),
 				gender: parseInt(userForm.gender),
 				role: "USER",
 			};
 
 			const newUser = await userServices.create(payload as any, "/users/register");
-			if (!newUser) {
+
+			if (!newUser?.userId) {
 				throw new Error("Failed to create user");
+			}
+
+			if (avatarFile) {
+				const formData = new FormData();
+				formData.append("avatar", avatarFile);
+				await UserServices.uploadAvatar(newUser.userId, avatarFile);
 			}
 
 			toast.success("User created successfully!");
@@ -192,6 +203,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				setIsCreate(false);
 			}
 		} catch (error) {
+			console.error(error);
 			toast.error("Failed to create user");
 		}
 	};
@@ -220,7 +232,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 							/>
 						) : (
 							<div className="flex h-full w-full items-center justify-center bg-gray-300 text-sm">
-								Add a image
+								Choose a image
 							</div>
 						)}
 					</div>

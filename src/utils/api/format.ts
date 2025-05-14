@@ -32,8 +32,20 @@ export const formatDateToDMY = (dateString: string): string => {
 	return `${day}-${month}-${year}`;
 };
 
+export const formatBirthdayToDMY = (dateString: string): string => {
+	const date = new Date(dateString);
+	const day = String(date.getUTCDate()).padStart(2, "0");
+	const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+	const year = date.getUTCFullYear();
+	return `${day}-${month}-${year}`;
+};
+
 export class FormatNumber {
 	public static toFormatNumber(num: number): string {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 	}
+
+	public static formatCurrency = (value: number) => {
+		return new Intl.NumberFormat("vi-VN").format(value);
+	};
 }

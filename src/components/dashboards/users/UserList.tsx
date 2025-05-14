@@ -8,6 +8,7 @@ import { Input } from "@heroui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { UserDetails } from "./UserDetails";
+import { ConfirmDeleteModal } from "@/components/modals";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -32,6 +33,9 @@ export const UserPage = () => {
 	const pathname = usePathname();
 
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
+
+	const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+	const [userToDelete, setUserToDelete] = useState<UserResponseDto | null>(null);
 
 	useEffect(() => {
 		const token = localStorage.getItem("token");
@@ -92,6 +96,31 @@ export const UserPage = () => {
 			setData((prev) => prev.filter((user) => user.userId !== id));
 		} catch (error) {
 			console.error("Error deleting user:", error);
+		}
+	};
+
+	const handleDeleteClick = (user: UserResponseDto) => {
+		setUserToDelete(user);
+		setIsDeleteOpen(true);
+	};
+
+	const confirmDelete = async () => {
+		if (!userToDelete) return;
+		try {
+			console.log("Deleting tour with ID:", userToDelete.userId);
+
+			const token = localStorage.getItem("token");
+			if (!token) {
+				router.push("/login");
+				return;
+			}
+			await userServices.delete(userToDelete.userId, "/users");
+			setData((prev) => prev.filter((user) => user.userId !== userToDelete.userId));
+		} catch (error) {
+			console.error("Error deleting tour:", error);
+		} finally {
+			setIsDeleteOpen(false);
+			setUserToDelete(null);
 		}
 	};
 
@@ -186,7 +215,7 @@ export const UserPage = () => {
 										</TableCell>
 										<TableCell width={20}>
 											<Button
-												onPress={() => handleDeleteUser(user.userId)}
+												onPress={() => handleDeleteClick(user)}
 												size="sm"
 												variant="light"
 											>
@@ -251,7 +280,7 @@ export const UserPage = () => {
 					/>
 					<div
 						className="relative overflow-auto p-4"
-						style={{ width: `${100 - leftWidth}%`, minWidth: "20%" }} // Thêm minWidth
+						style={{ width: `${100 - leftWidth}%`, minWidth: "20%" }}
 					>
 						<UserDetails
 							selectedUser={selectedUser}
@@ -262,6 +291,13 @@ export const UserPage = () => {
 					</div>
 				</>
 			)}
+			<ConfirmDeleteModal
+				isOpen={isDeleteOpen}
+				onOpenChange={setIsDeleteOpen}
+				itemName={userToDelete?.fullName}
+				onConfirm={confirmDelete}
+				onCancel={() => setUserToDelete(null)}
+			/>
 		</div>
 	);
 };

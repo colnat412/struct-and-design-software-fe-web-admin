@@ -10,7 +10,18 @@ export class TourServices extends BaseService<TourResponseDto> {
 		super(endpoint);
 	}
 
-	public static async searchTour() {}
+	public static async searchTour(keyword: string) {
+		try {
+			const response = await api.get(
+				`${ServiceConstants.BOOKING_SERVICE}/tours/search/${encodeURIComponent(keyword)}`,
+			);
+			return response.data.data;
+		} catch (error) {
+			console.error("Error searching tours:", error);
+			throw error;
+		}
+	}
+
 	// public static async getAllTours(token: string): Promise<TourResponseDto[]> {
 	// 	try {
 	// 		const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours`, {});
