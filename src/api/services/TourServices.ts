@@ -32,11 +32,9 @@ export class TourServices extends BaseService<TourResponseDto> {
 		}
 	}
 
-	public static async getTourScheduleOfTour(tourId: string, tourScheduleId: string) {
+	public static async getTourSchedulesOfTour(tourId: string) {
 		try {
-			const response = await api.get(
-				`${ServiceConstants.BOOKING_SERVICE}/tours/${tourId}/${tourScheduleId}/tourSchedule-detail`,
-			);
+			const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours/${tourId}/tour-schedule`);
 			return response.data.data;
 		} catch (error) {
 			console.error("Error fetching tour schedule:", error);

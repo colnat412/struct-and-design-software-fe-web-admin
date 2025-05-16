@@ -13,11 +13,9 @@ import { ImageIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Select, SelectItem } from "@heroui/react";
-import { PencilIcon } from "lucide-react";
-import TourDestination from "../dashboards/tours/TourDestination";
 import { TourImages, TourSchedules } from "../dashboards";
 
 interface BrowseTourModalProps {
@@ -33,9 +31,11 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [thumbnail, setThumbnail] = useState<string | undefined>(selectedTour?.thumbnail);
+
 	const [images, setImages] = useState<string[]>([]);
 	const [schedules, setSchedules] = useState<TourScheduleRequestDto[]>([]);
 	const [destinations, setDestinations] = useState<DestinationResponseDto[]>([]);
+
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 
@@ -51,6 +51,10 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					setImages(tourImageRes.map((img: TourImageResponseDto) => img.imageUrl));
 					const res = await tourServices.getAll("/destinations");
 					setDestinations(Array.isArray(res) ? res : []);
+					const scheduleRes = await TourServices.getTourSchedulesOfTour(selectedTour.tourId);
+					console.log("Tour Schedules:", scheduleRes);
+					setSchedules(Array.isArray(scheduleRes) ? scheduleRes : []);
+					console.log("Schedule:", schedules);
 				} catch (err) {
 					console.error("Failed to fetch tour images", err);
 				}

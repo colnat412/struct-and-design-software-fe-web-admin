@@ -16,13 +16,6 @@ import BrowseTourModal from "@/components/modals/BrowseTourModal";
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
 
-type Category = { id: string; name: string };
-const categories: Category[] = [
-	{ id: "beach", name: "Beach" },
-	{ id: "adventure", name: "Adventure" },
-	{ id: "cultural", name: "Cultural" },
-];
-
 export const TourList = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [page, setPage] = useState(1);

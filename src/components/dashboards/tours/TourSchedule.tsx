@@ -7,10 +7,10 @@ import { TourScheduleRequestDto } from "@/api";
 
 interface TourSchedulesProps {
 	schedules: TourScheduleRequestDto[];
-	setSchedules: (s: TourScheduleRequestDto[]) => void;
+	setSchedules: (schedules: TourScheduleRequestDto[]) => void;
 }
 
-export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
+export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSchedules }) => {
 	const handleAdd = () => {
 		setSchedules([
 			...schedules,
@@ -28,14 +28,20 @@ export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
 		]);
 	};
 
-	const handleChange = (index: number, field: keyof TourScheduleRequestDto, value: any) => {
+	const handleChange = <K extends keyof TourScheduleRequestDto>(
+		index: number,
+		field: K,
+		value: TourScheduleRequestDto[K],
+	) => {
 		const updated = [...schedules];
-		updated[index][field] = value;
+		updated[index] = { ...updated[index], [field]: value };
 		setSchedules(updated);
 	};
 
 	const handleRemove = (index: number) => {
-		setSchedules(schedules.filter((_, i) => i !== index));
+		const updated = [...schedules];
+		updated.splice(index, 1);
+		setSchedules(updated);
 	};
 
 	return (
@@ -52,7 +58,7 @@ export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
 			</div>
 
 			{!schedules.length ? (
-				<div className="text-center opacity-60">Please add a new schedule</div>
+				<p className="text-center opacity-60">There are no schedules added, please add a new schedule</p>
 			) : (
 				schedules.map((schedule, index) => (
 					<div
@@ -70,6 +76,7 @@ export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
 								<Trash className="size-5" />
 							</Button>
 						</div>
+
 						<Input
 							label="Name"
 							value={schedule.name}
@@ -80,49 +87,55 @@ export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
 							value={schedule.description}
 							onChange={(e) => handleChange(index, "description", e.target.value)}
 						/>
-						<div className="grid grid-cols-2 gap-4">
+						<div className="flex flex-row gap-4">
 							<Input
-								label="Start date"
+								label="Start Date"
 								type="date"
-								value={schedule.startDate}
+								value={schedule.startDate?.slice(0, 10)}
 								onChange={(e) => handleChange(index, "startDate", e.target.value)}
 							/>
 							<Input
-								label="End date"
+								label="End Date"
 								type="date"
-								value={schedule.endDate}
+								value={schedule.endDate?.slice(0, 10)}
 								onChange={(e) => handleChange(index, "endDate", e.target.value)}
 							/>
 						</div>
-						<div className="grid grid-cols-3 gap-4">
-							<Input
-								label="Adult price"
+						<div className="flex flex-row gap-4">
+							{/* <Input
+								label="Adult Price"
 								type="number"
 								value={schedule.adultPrice.toString()}
-								onChange={(e) => handleChange(index, "adultPrice", parseFloat(e.target.value))}
+								onChange={(e) =>
+									handleChange(index, "adultPrice", parseFloat(e.target.value) || 0)
+								}
 							/>
 							<Input
-								label="Child price"
+								label="Child Price"
 								type="number"
 								value={schedule.childPrice.toString()}
-								onChange={(e) => handleChange(index, "childPrice", parseFloat(e.target.value))}
+								onChange={(e) =>
+									handleChange(index, "childPrice", parseFloat(e.target.value) || 0)
+								}
 							/>
 							<Input
-								label="Baby price"
+								label="Baby Price"
 								type="number"
 								value={schedule.babyPrice.toString()}
-								onChange={(e) => handleChange(index, "babyPrice", parseFloat(e.target.value))}
-							/>
+								onChange={(e) =>
+									handleChange(index, "babyPrice", parseFloat(e.target.value) || 0)
+								}
+							/> */}
 						</div>
-						<Input
+						{/* <Input
 							label="Slot"
 							type="number"
 							value={schedule.slot.toString()}
-							onChange={(e) => handleChange(index, "slot", parseInt(e.target.value))}
-						/>
+							onChange={(e) => handleChange(index, "slot", parseInt(e.target.value) || 0)}
+						/> */}
 					</div>
 				))
 			)}
 		</div>
 	);
-}
+};
