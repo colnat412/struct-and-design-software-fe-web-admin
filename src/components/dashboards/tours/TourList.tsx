@@ -1,5 +1,5 @@
 "use client";
-import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
+import { CategoryResponseDto, DestinationResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { ConfirmDeleteModal } from "@/components/modals";
 import FilterModal from "@/components/modals/FilterModal";
@@ -77,8 +77,6 @@ export const TourList = () => {
 				setIsLoading(true);
 				const tours = await tourServices.getAll("/tours");
 				const categories = await tourServices.getAll("/category-tours");
-				console.log("Categories:", categories);
-
 				setData(Array.isArray(tours) ? tours : []);
 				setCategories(Array.isArray(categories) ? categories : []);
 			} catch (error) {
@@ -208,6 +206,7 @@ export const TourList = () => {
 						onPress={() => {
 							setIsCreate(true);
 							setSelectedTour(null);
+							setIsModalOpen(true);
 						}}
 						radius="none"
 						className="rounded-sm bg-secondary font-semibold text-white"

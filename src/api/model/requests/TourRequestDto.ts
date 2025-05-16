@@ -4,6 +4,7 @@ export interface TourRequestDto {
 	duration: string;
 	price: number;
 	thumbnail: string;
+	tourImages: TourImageRequestDto[];
 }
 
 export interface TourScheduleRequestDto {
@@ -19,8 +20,24 @@ export interface TourScheduleRequestDto {
 }
 
 export interface TourImageRequestDto {
-	tourImageId: string;
 	tourId: string;
 	imageUrl: string;
 	description: string | "";
+}
+
+export interface TourScheduleRequestDto {
+	name: string;
+	description: string;
+	startDate: string;
+	endDate: string;
+	adultPrice: number;
+	childPrice: number;
+	babyPrice: number;
+	slot: number;
+}
+
+export interface TourDestinationRequestDto {
+	tourId: string;
+	name: string;
+	description: string;
 }

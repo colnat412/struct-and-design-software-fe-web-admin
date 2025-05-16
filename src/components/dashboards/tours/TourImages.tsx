@@ -1,17 +1,18 @@
 "use client";
 
 import { ImageIcon } from "@/assets/svgs/common";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface TourImagesProps {
 	images: string[];
 	setImages: (images: string[]) => void;
 }
 
-export default function TourImages({ images, setImages }: TourImagesProps) {
+export const TourImages = ({ images, setImages }: TourImagesProps) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
 
 	const handleAddImage = () => {
 		fileInputRef.current?.click();
@@ -20,9 +21,18 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (files) {
-			const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
-			setImages([...images, ...newImages]);
+			const newImageURLs = Array.from(files).map((file) => URL.createObjectURL(file));
+			newImageURLs.forEach((url) => setLoadingImages((prev) => new Set(prev).add(url)));
+			setImages([...images, ...newImageURLs]);
 		}
+	};
+
+	const handleImageLoad = (url: string) => {
+		setLoadingImages((prev) => {
+			const updated = new Set(prev);
+			updated.delete(url);
+			return updated;
+		});
 	};
 
 	const handleRemoveImage = (index: number) => {
@@ -40,15 +50,26 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 						key={idx}
 						className="relative h-36 w-44 overflow-hidden rounded-lg"
 					>
+						{loadingImages.has(url) && (
+							<div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-50">
+								<Loader2
+									className="animate-spin text-gray-500"
+									size={24}
+								/>
+							</div>
+						)}
+
 						<Image
 							src={url}
 							alt={`Tour Image ${idx + 1}`}
 							fill
 							className="rounded object-cover"
+							onLoad={() => handleImageLoad(url)}
 						/>
+
 						<button
 							onClick={() => handleRemoveImage(idx)}
-							className="absolute right-1 top-1 rounded-full bg-white bg-opacity-80 p-1 text-sm text-red-500 hover:bg-opacity-100"
+							className="absolute right-1 top-1 z-20 rounded-full bg-white bg-opacity-80 p-1 text-sm text-red-500 hover:bg-opacity-100"
 						>
 							<X size={16} />
 						</button>
@@ -64,7 +85,7 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 						height={24}
 						opacity={0.5}
 					/>
-					<p className="text-sm text-gray-500">Click to images</p>
+					<p className="text-sm text-gray-500">Click to add images</p>
 				</div>
 
 				<input
@@ -78,4 +99,4 @@ export default function TourImages({ images, setImages }: TourImagesProps) {
 			</div>
 		</div>
 	);
-}
+};

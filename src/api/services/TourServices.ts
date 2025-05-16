@@ -22,6 +22,28 @@ export class TourServices extends BaseService<TourResponseDto> {
 		}
 	}
 
+	public static async getTourImagesOfTour(tourId: string) {
+		try {
+			const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours/${tourId}/tour-images`);
+			return response.data.data;
+		} catch (error) {
+			console.error("Error fetching tour images:", error);
+			throw error;
+		}
+	}
+
+	public static async getTourScheduleOfTour(tourId: string, tourScheduleId: string) {
+		try {
+			const response = await api.get(
+				`${ServiceConstants.BOOKING_SERVICE}/tours/${tourId}/${tourScheduleId}/tourSchedule-detail`,
+			);
+			return response.data.data;
+		} catch (error) {
+			console.error("Error fetching tour schedule:", error);
+			throw error;
+		}
+	}
+
 	// public static async getAllTours(token: string): Promise<TourResponseDto[]> {
 	// 	try {
 	// 		const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours`, {});

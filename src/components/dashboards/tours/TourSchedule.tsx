@@ -3,24 +3,14 @@
 import { Input, Textarea } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Plus, Trash } from "lucide-react";
-
-export interface Schedule {
-	name: string;
-	description: string;
-	startDate: string;
-	endDate: string;
-	adultPrice: number;
-	childPrice: number;
-	babyPrice: number;
-	slot: number;
-}
+import { TourScheduleRequestDto } from "@/api";
 
 interface TourSchedulesProps {
-	schedules: Schedule[];
-	setSchedules: (s: Schedule[]) => void;
+	schedules: TourScheduleRequestDto[];
+	setSchedules: (s: TourScheduleRequestDto[]) => void;
 }
 
-export default function TourSchedules({ schedules, setSchedules }: TourSchedulesProps) {
+export const TourSchedules({ schedules, setSchedules }: TourSchedulesProps) =>{
 	const handleAdd = () => {
 		setSchedules([
 			...schedules,
@@ -33,11 +23,12 @@ export default function TourSchedules({ schedules, setSchedules }: TourSchedules
 				childPrice: 0,
 				babyPrice: 0,
 				slot: 0,
+				tourId: "",
 			},
 		]);
 	};
 
-	const handleChange = (index: number, field: keyof Schedule, value: any) => {
+	const handleChange = (index: number, field: keyof TourScheduleRequestDto, value: any) => {
 		const updated = [...schedules];
 		updated[index][field] = value;
 		setSchedules(updated);

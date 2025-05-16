@@ -1,15 +1,24 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import {
+	CategoryResponseDto,
+	DestinationResponseDto,
+	ServiceConstants,
+	TourImageResponseDto,
+	TourResponseDto,
+	TourScheduleRequestDto,
+	TourServices,
+} from "@/api";
+import { ImageIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
-import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { useRouter } from "next/navigation";
-import { FormatNumber } from "@/utils/api";
-import TourImages from "../dashboards/tours/TourImages";
-import TourSchedules, { Schedule } from "../dashboards/tours/TourSchedule";
-import { ImageIcon } from "@/assets/svgs/common";
+import { useEffect, useRef, useState } from "react";
+import { Select, SelectItem } from "@heroui/react";
+import { PencilIcon } from "lucide-react";
+import TourDestination from "../dashboards/tours/TourDestination";
+import { TourImages, TourSchedules } from "../dashboards";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -25,11 +34,29 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const [thumbnail, setThumbnail] = useState<string | undefined>(selectedTour?.thumbnail);
 	const [images, setImages] = useState<string[]>([]);
-	const [schedules, setSchedules] = useState<Schedule[]>([]);
+	const [schedules, setSchedules] = useState<TourScheduleRequestDto[]>([]);
+	const [destinations, setDestinations] = useState<DestinationResponseDto[]>([]);
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
+	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 
 	useEffect(() => {
 		setThumbnail(selectedTour?.thumbnail);
+	}, [selectedTour]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			if (selectedTour) {
+				try {
+					const tourImageRes = await TourServices.getTourImagesOfTour(selectedTour.tourId);
+					setImages(tourImageRes.map((img: TourImageResponseDto) => img.imageUrl));
+					const res = await tourServices.getAll("/destinations");
+					setDestinations(Array.isArray(res) ? res : []);
+				} catch (err) {
+					console.error("Failed to fetch tour images", err);
+				}
+			}
+		};
+		fetchData();
 	}, [selectedTour]);
 
 	const [formData, setFormData] = useState({
@@ -39,7 +66,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 		duration: "",
 		price: "",
 		categoryTourId: "",
-		// destination: "",
+		// destinationId: "",
 	});
 
 	useEffect(() => {
@@ -51,7 +78,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				duration: selectedTour.duration || "",
 				price: selectedTour.price?.toString() || "",
 				categoryTourId: selectedTour.categoryTour?.categoryTourId || "",
-				// destination: selectedTour.destination || "",
+				// destinationId: selectedTour.destination.destinationId || "",
 			});
 			console.log("Selected Tour:", selectedTour);
 			console.log("Form Data:", formData);
@@ -63,7 +90,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				duration: "",
 				price: "",
 				categoryTourId: "",
-				// destination: "",
+				// destinationId: "",
 			});
 		}
 	}, [selectedTour]);
@@ -125,14 +152,31 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 		>
 			<ModalContent className="max-h-[90vh] overflow-hidden">
 				<ModalHeader>
-					<input
-						type="text"
-						name="name"
-						placeholder="Enter tour name"
-						className="text-md w-full border-b bg-transparent font-semibold outline-none transition-all focus:border-primary"
-						value={formData.name}
-						onChange={handleChange}
-					/>
+					{isEditingName ? (
+						<input
+							type="text"
+							name="name"
+							placeholder="Enter tour name"
+							className="text-md w-full border-b bg-transparent font-semibold outline-none transition-all focus:border-primary"
+							value={formData.name}
+							onChange={handleChange}
+							onBlur={() => setIsEditingName(false)}
+							autoFocus
+						/>
+					) : (
+						<div
+							className="group flex w-full cursor-pointer flex-row items-center gap-2"
+							onClick={() => setIsEditingName(true)}
+						>
+							<h2 className="text-lg font-semibold text-gray-800">
+								{formData.name || "Untitled Tour"}
+							</h2>
+							<PencilIcon
+								size={16}
+								className="text-secondary group-hover:text-secondary"
+							/>
+						</div>
+					)}
 				</ModalHeader>
 				<ModalBody
 					className="flex w-full max-w-full flex-col overflow-y-auto p-4"

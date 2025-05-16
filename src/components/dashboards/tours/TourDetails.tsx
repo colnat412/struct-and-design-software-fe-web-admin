@@ -30,6 +30,7 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 		duration: "",
 		price: 0,
 		thumbnail: "",
+		tourImages: [],
 	});
 
 	useEffect(() => {

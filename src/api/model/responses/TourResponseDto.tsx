@@ -6,6 +6,8 @@ export interface TourResponseDto {
 	thumbnail: string;
 	duration: string;
 	categoryTour: CategoryResponseDto;
+	tourImages: TourImageResponseDto[];
+	// destination: DestinationResponseDto;
 }
 
 export interface CategoryResponseDto {
@@ -14,4 +16,24 @@ export interface CategoryResponseDto {
 	description: string;
 	image: string;
 	active: boolean;
+}
+
+export interface TourImageResponseDto {
+	tourImageId: string;
+	tourId: string;
+	imageUrl: string;
+	description: string;
+}
+
+export interface DestinationResponseDto {
+	destinationId: string;
+	name: string;
+	description: string;
+	image: string;
+	address: string;
+	city: string;
+	district: string;
+	country: string;
+	cityId: string;
+	districtId: string;
 }
