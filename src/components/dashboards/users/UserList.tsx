@@ -136,7 +136,7 @@ export const UserPage = () => {
 					minWidth: "20%",
 				}}
 			>
-				<span className="text-lg font-semibold">Users Management</span>
+				<span className="text-lg font-semibold">Quản lý người dùng</span>
 				<div className="mb-2 flex items-center gap-4">
 					<Input
 						startContent={
@@ -148,13 +148,13 @@ export const UserPage = () => {
 						radius="sm"
 						variant="faded"
 						className="w-1/3"
-						placeholder="Search ..."
+						placeholder="Tìm kiếm ..."
 					/>
 					<Button
 						radius="none"
 						className="rounded-sm bg-primary font-semibold text-white"
 					>
-						Search
+						Tìm kiếm
 					</Button>
 					<Button
 						onPress={() => {
@@ -165,7 +165,7 @@ export const UserPage = () => {
 						radius="none"
 						className="rounded-sm bg-secondary font-semibold text-white"
 					>
-						Add new user
+						Thêm mới
 					</Button>
 				</div>
 
@@ -178,13 +178,13 @@ export const UserPage = () => {
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>Username</TableHead>
+									<TableHead>Tên người dùng</TableHead>
 									<TableHead>Email</TableHead>
-									<TableHead>Name</TableHead>
-									<TableHead>Phone</TableHead>
-									<TableHead>Gender</TableHead>
-									<TableHead>Date of birth</TableHead>
-									<TableHead className="w-40">Role</TableHead>
+									<TableHead>Họ tên</TableHead>
+									<TableHead>Số điện thoại</TableHead>
+									<TableHead>Giới tính</TableHead>
+									<TableHead>Ngày sinh</TableHead>
+									<TableHead className="w-40">Vai trò</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -200,7 +200,7 @@ export const UserPage = () => {
 										<TableCell>{user.email}</TableCell>
 										<TableCell>{user.fullName}</TableCell>
 										<TableCell>{user.phone}</TableCell>
-										<TableCell>{Number(user.gender) === 1 ? "Male" : "Female"}</TableCell>
+										<TableCell>{Number(user.gender) === 1 ? "Nam" : "Nữ"}</TableCell>
 										<TableCell>{formatDateToDisplay(user.birthday)}</TableCell>
 										<TableCell
 											className={

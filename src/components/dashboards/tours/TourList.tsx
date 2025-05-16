@@ -168,7 +168,7 @@ export const TourList = () => {
 				className="flex w-full flex-col gap-3 overflow-auto p-4"
 				// style={{ width: selectedTour ? `${leftWidth}%` : "100%" }}
 			>
-				<span className="text-lg font-semibold">Tours Management</span>
+				<span className="text-lg font-semibold">Quản lý tour</span>
 				<div className="mb-2 flex items-center gap-4">
 					<Input
 						startContent={
@@ -180,7 +180,7 @@ export const TourList = () => {
 						radius="sm"
 						variant="faded"
 						className="w-1/3"
-						placeholder="Name, description, duration,..."
+						placeholder="Tìm kiếm..."
 						onChange={(e) => {
 							setSearchInput(e.target.value);
 						}}
@@ -193,7 +193,7 @@ export const TourList = () => {
 						radius="none"
 						className="rounded-sm bg-primary font-semibold text-white"
 					>
-						Search
+						Tìm kiếm
 					</Button>
 					<Button
 						onPress={() => {
@@ -204,7 +204,7 @@ export const TourList = () => {
 						radius="none"
 						className="rounded-sm bg-secondary font-semibold text-white"
 					>
-						Add new tour
+						Thêm mới
 					</Button>
 					<Button
 						startContent={<FilterIcon />}
@@ -222,12 +222,12 @@ export const TourList = () => {
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead className="item-s font-bold">Thumbnail</TableHead>
-									<TableHead className="font-bold">Name</TableHead>
-									<TableHead className="font-bold">Description</TableHead>
-									<TableHead className="font-bold">Duration</TableHead>
-									<TableHead className="font-bold">Price</TableHead>
-									<TableHead className="font-bold">Category</TableHead>
+									<TableHead className="item-s font-bold">Ảnh</TableHead>
+									<TableHead className="font-bold">Tên tour</TableHead>
+									<TableHead className="font-bold">Mô tả</TableHead>
+									<TableHead className="font-bold">Thời lượng chuyến</TableHead>
+									<TableHead className="font-bold">Giá</TableHead>
+									<TableHead className="font-bold">Loại tour</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>

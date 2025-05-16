@@ -12,7 +12,7 @@ export const Menu = () => {
 	const items = [
 		{
 			id: 0,
-			title: "Dashboard",
+			title: "Tổng quan",
 			icon: (isSelected: boolean) => (
 				<DashboardIcon
 					width={40}
@@ -24,7 +24,7 @@ export const Menu = () => {
 		},
 		{
 			id: 1,
-			title: "User",
+			title: "Người dùng",
 			icon: (isSelected: boolean) => (
 				<ContactIcon
 					width={40}
@@ -48,7 +48,7 @@ export const Menu = () => {
 		},
 		{
 			id: 3,
-			title: "Booking",
+			title: "Đặt tour",
 			icon: (isSelected: boolean) => (
 				<LocationIcon
 					width={40}

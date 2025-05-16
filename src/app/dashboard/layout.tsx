@@ -83,7 +83,7 @@ export default function RootLayout({
 							width={200}
 							height={200}
 						/>
-						<span className="font-semibold">Welcome, {data?.fullName}</span>
+						<span className="font-semibold">Xin chào, {data?.fullName}</span>
 						<Menu />
 						<div className="my-2 flex w-full flex-col items-center gap-4">
 							<Button
@@ -98,7 +98,7 @@ export default function RootLayout({
 								size="md"
 								className="w-1/2 rounded-sm bg-secondary font-semibold text-white"
 							>
-								Sign out
+								Đăng xuất
 							</Button>
 						</div>
 					</div>

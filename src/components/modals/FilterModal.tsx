@@ -38,11 +38,10 @@ const FilterModal: React.FC<FilterModalProps> = ({
 			<ModalContent>
 				{() => (
 					<>
-						<ModalHeader className="flex flex-col gap-1">Filter</ModalHeader>
+						<ModalHeader className="flex flex-col gap-1">Lọc</ModalHeader>
 						<ModalBody className="flex flex-col gap-4">
-							{/* Category */}
 							<div>
-								<p className="mb-2 font-semibold">Category Tour:</p>
+								<p className="mb-2 font-semibold">Loại Tour:</p>
 								<div className="flex flex-wrap gap-2">
 									{categories.map((category) => (
 										<Button
@@ -66,9 +65,8 @@ const FilterModal: React.FC<FilterModalProps> = ({
 								</div>
 							</div>
 
-							{/* Price */}
 							<div>
-								<p className="mb-2 font-semibold">Range price (VND):</p>
+								<p className="mb-2 font-semibold">Khoảng giá (VND):</p>
 								<div className="flex items-center gap-3">
 									<input
 										type="text"

@@ -221,15 +221,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						</div>
 
 						<div className="flex flex-col gap-4">
-							{/* <Input
-							isRequired
-							name="name"
-							label="Name"
-							labelPlacement="outside"
-							placeholder="Enter tour name"
-							value={formData.name}
-							onChange={handleChange}
-						/> */}
 							<div className="flex flex-row gap-2">
 								<Input
 									isRequired
