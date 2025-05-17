@@ -1,7 +1,8 @@
 "use client";
-import { CategoryResponseDto, DestinationResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
+import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { ConfirmDeleteModal } from "@/components/modals";
+import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import FilterModal from "@/components/modals/FilterModal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FormatNumber } from "@/utils/api";
@@ -10,8 +11,6 @@ import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { TourDetails } from "./TourDetails";
-import BrowseTourModal from "@/components/modals/BrowseTourModal";
 
 const rowsPerPage = 10;
 const pagesPerGroup = 5;
@@ -23,7 +22,6 @@ export const TourList = () => {
 	const [selectedTour, setSelectedTour] = useState<TourResponseDto | null>(null);
 	const [isCreate, setIsCreate] = useState<boolean>(false);
 
-	const [leftWidth, setLeftWidth] = useState(60);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const totalPages = Math.ceil(data.length / rowsPerPage);
@@ -81,14 +79,6 @@ export const TourList = () => {
 		fetchData();
 	}, []);
 
-	const handleChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		if (value) {
-			const filteredData = data.filter((tour) => tour.name.toLowerCase().includes(value.toLowerCase()));
-			setData(filteredData);
-		}
-	};
-
 	const handleSearch = async (keyword: string) => {
 		if (!keyword) {
 			setSearchInput("");
@@ -96,25 +86,6 @@ export const TourList = () => {
 		const res = await TourServices.searchTour(keyword);
 		if (res) {
 			setData(res);
-		}
-	};
-
-	const handleDeleteTour = async (id: string) => {
-		try {
-			console.log("Deleting tour with ID:", id);
-
-			const confirmed = window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?");
-			if (!confirmed) return;
-
-			const token = localStorage.getItem("token");
-			if (!token) {
-				router.push("/login");
-				return;
-			}
-			await tourServices.delete(id, "/tours");
-			setData((prev) => prev.filter((tour) => tour.tourId !== id));
-		} catch (error) {
-			console.error("Error deleting user:", error);
 		}
 	};
 

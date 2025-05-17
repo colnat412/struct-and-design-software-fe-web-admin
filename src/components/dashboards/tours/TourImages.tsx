@@ -1,14 +1,17 @@
 "use client";
 
+import { TourImageRequestDto, TourImageResponseDto } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
 import { X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface TourImagesProps {
-	images: string[];
-	setImages: (images: string[]) => void;
+	images: TourImageWithFile[];
+	setImages: (images: TourImageWithFile[]) => void;
 }
+
+type TourImageWithFile = TourImageRequestDto & { file?: File };
 
 export const TourImages = ({ images, setImages }: TourImagesProps) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,9 +24,17 @@ export const TourImages = ({ images, setImages }: TourImagesProps) => {
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (files) {
-			const newImageURLs = Array.from(files).map((file) => URL.createObjectURL(file));
-			newImageURLs.forEach((url) => setLoadingImages((prev) => new Set(prev).add(url)));
-			setImages([...images, ...newImageURLs]);
+			const newImages: TourImageWithFile[] = Array.from(files).map((file) => {
+				const url = URL.createObjectURL(file);
+				setLoadingImages((prev) => new Set(prev).add(url));
+				return {
+					tourId: "",
+					imageUrl: url,
+					description: "",
+					file,
+				};
+			});
+			setImages([...images, ...newImages]);
 		}
 	};
 
@@ -43,14 +54,14 @@ export const TourImages = ({ images, setImages }: TourImagesProps) => {
 
 	return (
 		<div className="flex flex-col gap-4">
-			<h3 className="text-lg font-semibold">Tour Images</h3>
+			<h3 className="text-lg font-semibold">Hình Ảnh của Tour</h3>
 			<div className="flex flex-wrap gap-4">
-				{images.map((url, idx) => (
+				{images.map((image, idx) => (
 					<div
-						key={idx}
+						key={image.imageUrl + idx}
 						className="relative h-36 w-44 overflow-hidden rounded-lg"
 					>
-						{loadingImages.has(url) && (
+						{loadingImages.has(image.imageUrl) && (
 							<div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-50">
 								<Loader2
 									className="animate-spin text-gray-500"
@@ -60,11 +71,11 @@ export const TourImages = ({ images, setImages }: TourImagesProps) => {
 						)}
 
 						<Image
-							src={url}
+							src={image.imageUrl}
 							alt={`Tour Image ${idx + 1}`}
 							fill
 							className="rounded object-cover"
-							onLoad={() => handleImageLoad(url)}
+							onLoad={() => handleImageLoad(image.imageUrl)}
 						/>
 
 						<button
@@ -85,7 +96,7 @@ export const TourImages = ({ images, setImages }: TourImagesProps) => {
 						height={24}
 						opacity={0.5}
 					/>
-					<p className="text-sm text-gray-500">Click to add images</p>
+					<p className="text-sm text-gray-500">Nhấn vào để thêm ảnh</p>
 				</div>
 
 				<input

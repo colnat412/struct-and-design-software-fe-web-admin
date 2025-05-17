@@ -118,6 +118,8 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				avatarUrl: userForm.avatarUrl,
 			};
 
+			console.log("Payload:", payload);
+
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
 			if (!updatedUser) {
 				throw new Error("No response from server");

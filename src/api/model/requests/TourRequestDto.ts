@@ -30,3 +30,12 @@ export interface TourDestinationRequestDto {
 	name: string;
 	description: string;
 }
+
+export interface CreateTourDto {
+	name: string;
+	description: string;
+	duration: string;
+	price: number;
+	image_tour: File[];
+	destination: string;
+}

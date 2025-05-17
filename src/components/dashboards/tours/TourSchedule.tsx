@@ -47,7 +47,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 	return (
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
-				<h3 className="text-lg font-semibold">Tour Schedules</h3>
+				<h3 className="text-lg font-semibold">Lịch Trình Tour</h3>
 				<Button
 					size="sm"
 					onPress={handleAdd}
@@ -58,7 +58,9 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 			</div>
 
 			{!schedules.length ? (
-				<p className="text-center opacity-60">There are no schedules added, please add a new schedule</p>
+				<p className="text-center opacity-60">
+					Không có lịch trình nào được thêm, vui lòng thêm lịch trình mới
+				</p>
 			) : (
 				schedules.map((schedule, index) => (
 					<div
@@ -66,7 +68,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						className="grid grid-cols-1 gap-4 rounded-lg border p-4 shadow-sm"
 					>
 						<div className="flex items-center justify-between">
-							<h4 className="font-medium">Schedule {index + 1}</h4>
+							<h4 className="font-medium">Lịch Trình {index + 1}</h4>
 							<Button
 								size="sm"
 								color="secondary"
@@ -78,24 +80,24 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						</div>
 
 						<Input
-							label="Name"
+							label="Tên Lịch Trình"
 							value={schedule.name}
 							onChange={(e) => handleChange(index, "name", e.target.value)}
 						/>
 						<Textarea
-							label="Description"
+							label="Mô Tả"
 							value={schedule.description}
 							onChange={(e) => handleChange(index, "description", e.target.value)}
 						/>
 						<div className="flex flex-row gap-4">
 							<Input
-								label="Start Date"
+								label="Ngày bắt đầu"
 								type="date"
 								value={schedule.startDate?.slice(0, 10)}
 								onChange={(e) => handleChange(index, "startDate", e.target.value)}
 							/>
 							<Input
-								label="End Date"
+								label="Ngày kết thúc"
 								type="date"
 								value={schedule.endDate?.slice(0, 10)}
 								onChange={(e) => handleChange(index, "endDate", e.target.value)}
