@@ -4,7 +4,7 @@ export interface TourRequestDto {
 	duration: string;
 	price: number;
 	thumbnail: string;
-	tourImages: TourImageRequestDto[];
+	categoryId: string;
 }
 
 export interface TourScheduleRequestDto {
@@ -36,6 +36,13 @@ export interface CreateTourDto {
 	description: string;
 	duration: string;
 	price: number;
-	image_tour: File[];
-	destination: string;
+	thumbnail: string;
+	categoryId: string;
+}
+
+export interface CreateTourImageDto {
+	file: File;
+	tourId: string;
+	description: string | "";
+	orderIndex: number | 1;
 }

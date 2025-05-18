@@ -83,4 +83,23 @@ export class UserServices extends BaseService<UserResponseDto> {
 			throw error;
 		}
 	}
+
+	public static async uploadImage(file: File) {
+		try {
+			const formData = new FormData();
+			formData.append("file", file);
+
+			const token = localStorage.getItem("token");
+
+			const res = await axios.post(`${apiUrl}/${ServiceConstants.USER_SERVICE}/files/upload/image`, formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			return res.data;
+		} catch (error) {
+			throw error;
+		}
+	}
 }

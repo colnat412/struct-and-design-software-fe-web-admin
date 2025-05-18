@@ -2,12 +2,15 @@
 
 import {
 	CategoryResponseDto,
+	CreateTourDto,
+	CreateTourImageDto,
 	DestinationResponseDto,
 	ServiceConstants,
 	TourImageRequestDto,
 	TourResponseDto,
 	TourScheduleRequestDto,
 	TourServices,
+	UserServices,
 } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
@@ -68,38 +71,35 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 		fetchData();
 	}, [selectedTour]);
 
-	const [formData, setFormData] = useState({
+	const [tourForm, setTourForm] = useState({
 		thumbnail: "",
 		name: "",
 		description: "",
 		duration: "",
 		price: "",
-		categoryTourId: "",
-		// destinationId: "",
+		categoryId: "",
 	});
 
 	useEffect(() => {
 		if (selectedTour) {
-			setFormData({
+			setTourForm({
 				thumbnail: selectedTour.thumbnail || "",
 				name: selectedTour.name || "",
 				description: selectedTour.description || "",
 				duration: selectedTour.duration || "",
 				price: selectedTour.price?.toString() || "",
-				categoryTourId: selectedTour.categoryTour?.categoryTourId || "",
-				// destinationId: selectedTour.destination.destinationId || "",
+				categoryId: selectedTour.categoryTour?.categoryTourId || "",
 			});
 			console.log("Selected Tour:", selectedTour);
-			console.log("Form Data:", formData);
+			console.log("Form Data:", tourForm);
 		} else {
-			setFormData({
+			setTourForm({
 				thumbnail: "",
 				name: "Tour mới",
 				description: "",
 				duration: "",
 				price: "",
-				categoryTourId: "",
-				// destinationId: "",
+				categoryId: "",
 			});
 		}
 	}, [selectedTour]);
@@ -133,56 +133,36 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
-		setFormData((prev) => ({ ...prev, [name]: value }));
-	};
-
-	const handleSave = async () => {
-		try {
-			const payload = {
-				...formData,
-				price: Number(formData.price),
-				image_tour: images,
-				schedules: schedules.map((schedule) => ({ ...schedule, tourId: selectedTour?.tourId })),
-			};
-			console.log("Saving Tour Payload:", payload);
-			onSaved?.();
-			onClose();
-		} catch (err) {
-			console.error("Failed to save tour", err);
-		}
+		setTourForm((prev) => ({ ...prev, [name]: value }));
 	};
 
 	const handleAddNewTour = async () => {
 		try {
-			const form = new FormData();
+			// const thumbnailFile = fileInputRef.current?.files?.[0];
+			// const thumbnailUpload = await UserServices.uploadAvatar(thumbnailFile);
 
-			const destinations = [
-				{ name: "Hà Nội", description: "Thủ đô của Việt Nam, ..." },
-				{ name: "Việt Phủ Thành Chương", description: "Không gian văn hóa truyền thống, ..." },
-			];
+			const payload = {
+				name: tourForm.name,
+				description: tourForm.description,
+				duration: tourForm.duration,
+				price: Number(tourForm.price),
+				thumbnail: thumbnail || "",
+				categoryId: tourForm.categoryId,
+			} as CreateTourDto;
+			const newTour = await tourServices.create(payload as any, "/tours");
 
-			form.append("name", formData.name);
-			form.append("description", formData.description);
-			form.append("duration", formData.duration);
-			form.append("price", formData.price.toString());
-			form.append("destination", JSON.stringify(destinations));
-
-			images.forEach((img) => {
-				if (img.file) {
-					console.log("Appending file:", img.file.name);
-					form.append("image_tour", img.file);
-				} else {
-					console.warn("No file for image:", img);
+			if (newTour) {
+				for (const [index, image] of images.entries()) {
+					const formDataTourImages = new FormData();
+					if (image.file) {
+						formDataTourImages.append("file", image.file);
+					}
+					formDataTourImages.append("description", image.description || `Ảnh tour ${index + 1}`);
+					formDataTourImages.append("orderIndex", index.toString());
+					formDataTourImages.append("tourId", newTour.tourId);
+					await TourServices.createTourImage(formDataTourImages);
 				}
-			});
-
-			for (const [key, value] of form.entries()) {
-				console.log(key, value);
 			}
-
-			const res = await tourServices.create(form as any, "/tours");
-
-			console.log("Created tour:", res);
 			onSaved?.();
 			onClose();
 		} catch (error: any) {
@@ -205,7 +185,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 							name="name"
 							placeholder="Nhập tên tour"
 							className="text-md w-full border-b bg-transparent font-semibold outline-none transition-all focus:border-primary"
-							value={formData.name}
+							value={tourForm.name}
 							onChange={handleChange}
 							onBlur={() => setIsEditingName(false)}
 							autoFocus
@@ -216,7 +196,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 							onClick={() => setIsEditingName(true)}
 						>
 							<h2 className="text-lg font-semibold text-gray-800">
-								{formData.name || "Tour mới"}
+								{tourForm.name || "Tour mới"}
 							</h2>
 							<PencilIcon
 								size={16}
@@ -230,9 +210,10 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					style={{ maxHeight: "100vh" }}
 				>
 					<h3 className="text-lg font-semibold">Thông Tin Tour</h3>
+
 					<div className="flex flex-col gap-4">
 						<div className="m-1 flex flex-col gap-1">
-							<span className="mb-2 font-medium">Ảnh</span>
+							<span className="mb-2 text-sm font-medium">Ảnh đại diện</span>
 							<div
 								onClick={handleImageClick}
 								className="flex h-48 w-80 cursor-pointer flex-col items-center justify-center gap-2 rounded border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
@@ -271,7 +252,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									label="Thời lượng"
 									labelPlacement="outside"
 									placeholder="3 ngày 2 đêm"
-									value={formData.duration}
+									value={tourForm.duration}
 									onChange={handleChange}
 								/>
 								<Input
@@ -281,13 +262,13 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									inputMode="numeric"
 									labelPlacement="outside"
 									placeholder="2.500.000"
-									value={formData.price}
+									value={tourForm.price}
 									onChange={handleChange}
 								/>
 								<select
 									className="rounded border p-2"
-									name="categoryTourId"
-									value={formData.categoryTourId}
+									name="categoryId"
+									value={tourForm.categoryId}
 									onChange={handleChange}
 								>
 									<option value="">Chọn loại tour</option>
@@ -306,7 +287,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 							label="Destination"
 							labelPlacement="outside"
 							placeholder="e.g. Da Nang"
-							value={formData.destination}
+							value={tourForm.destination}
 							onChange={handleChange}
 						/> */}
 							<Textarea
@@ -315,7 +296,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 								label="Mô tả"
 								labelPlacement="outside"
 								placeholder="Chi tiết tour"
-								value={formData.description}
+								value={tourForm.description}
 								onChange={handleChange}
 							/>
 						</div>

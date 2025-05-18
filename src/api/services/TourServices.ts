@@ -42,6 +42,21 @@ export class TourServices extends BaseService<TourResponseDto> {
 		}
 	}
 
+	public static async createTourImage(formData: FormData) {
+		try {
+			const response = await api.post(`${ServiceConstants.BOOKING_SERVICE}/api/tour-images/upload`, formData, {
+				headers: {
+					"Content-Type": "multipart/form-data",
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
+			return response.data.data;
+		} catch (error) {
+			console.error("Error creating tour image:", error);
+			throw error;
+		}
+	}
+
 	// public static async getAllTours(token: string): Promise<TourResponseDto[]> {
 	// 	try {
 	// 		const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours`, {});

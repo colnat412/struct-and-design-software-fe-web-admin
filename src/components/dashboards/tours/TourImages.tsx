@@ -1,10 +1,10 @@
 "use client";
 
-import { TourImageRequestDto, TourImageResponseDto } from "@/api";
+import { TourImageRequestDto } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
-import { X, Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 interface TourImagesProps {
 	images: TourImageWithFile[];
