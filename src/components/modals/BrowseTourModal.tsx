@@ -2,8 +2,10 @@
 
 import {
 	CategoryResponseDto,
+	CreateTourDestinationDto,
 	CreateTourDto,
 	CreateTourImageDto,
+	CreateTourScheduleDto,
 	DestinationResponseDto,
 	ServiceConstants,
 	TourImageRequestDto,
@@ -19,7 +21,7 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@herou
 import { PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { TourImages, TourSchedules } from "../dashboards";
+import { TourDestination, TourImages, TourSchedules } from "../dashboards";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -46,6 +48,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 	const [imageFiles, setImageFiles] = useState<File[]>([]);
+	const [selectedDestinationIds, setSelectedDestinationIds] = useState<string[]>([]);
 
 	useEffect(() => {
 		setThumbnail(selectedTour?.thumbnail);
@@ -53,19 +56,17 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	useEffect(() => {
 		const fetchData = async () => {
-			if (selectedTour) {
-				try {
+			try {
+				if (selectedTour) {
 					const tourImageRes = await TourServices.getTourImagesOfTour(selectedTour.tourId);
 					setImages(tourImageRes);
 					const res = await tourServices.getAll("/destinations");
 					setDestinations(Array.isArray(res) ? res : []);
 					const scheduleRes = await TourServices.getTourSchedulesOfTour(selectedTour.tourId);
-					console.log("Tour Schedules:", scheduleRes);
 					setSchedules(Array.isArray(scheduleRes) ? scheduleRes : []);
-					console.log("Schedule:", schedules);
-				} catch (err) {
-					console.error("Failed to fetch tour images", err);
 				}
+			} catch (err) {
+				console.error("Failed to fetch tour images", err);
 			}
 		};
 		fetchData();
@@ -114,6 +115,8 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 			try {
 				const res = await tourServices.getAll("/category-tours");
 				setCategories(Array.isArray(res) ? res : []);
+				const destinationsRes = await tourServices.getAll("/destinations");
+				setDestinations(Array.isArray(destinationsRes) ? destinationsRes : []);
 			} catch (err) {
 				console.error("Failed to fetch categories", err);
 			}
@@ -138,9 +141,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	const handleAddNewTour = async () => {
 		try {
-			// const thumbnailFile = fileInputRef.current?.files?.[0];
-			// const thumbnailUpload = await UserServices.uploadAvatar(thumbnailFile);
-
 			const payload = {
 				name: tourForm.name,
 				description: tourForm.description,
@@ -149,20 +149,51 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				thumbnail: thumbnail || "",
 				categoryId: tourForm.categoryId,
 			} as CreateTourDto;
-			const newTour = await tourServices.create(payload as any, "/tours");
 
+			const newTour = await tourServices.create(payload as any, "/tours");
 			if (newTour) {
+				// Create Tour Images
 				for (const [index, image] of images.entries()) {
 					const formDataTourImages = new FormData();
 					if (image.file) {
 						formDataTourImages.append("file", image.file);
 					}
-					formDataTourImages.append("description", image.description || `Ảnh tour ${index + 1}`);
+					formDataTourImages.append("description", `Ảnh tour ${index + 1}`);
 					formDataTourImages.append("orderIndex", index.toString());
 					formDataTourImages.append("tourId", newTour.tourId);
 					await TourServices.createTourImage(formDataTourImages);
 				}
+				// Create Tour Schedule
+				for (const schedule of schedules) {
+					const tourSchedulePayload = {
+						name: schedule.name,
+						description: schedule.description,
+						startDate: schedule.startDate,
+						endDate: schedule.endDate,
+						adultPrice: schedule.adultPrice,
+						childPrice: schedule.childPrice,
+						babyPrice: schedule.babyPrice,
+						slot: schedule.slot,
+						tourId: newTour.tourId,
+					} as CreateTourScheduleDto;
+					await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
+				}
+				// Create Tour Destinations
+				const selectedDestinations = destinations.filter((d) =>
+					selectedDestinationIds.includes(d.destinationId),
+				);
+				for (const [index, destination] of selectedDestinations.entries()) {
+					const destinationPayload: CreateTourDestinationDto = {
+						name: destination.name,
+						description: destination.description,
+						tourId: newTour.tourId,
+						orderIndex: index + 1,
+						destinationId: destination.destinationId,
+					};
+					await tourServices.create(destinationPayload as any, "/tour-destinations");
+				}
 			}
+
 			onSaved?.();
 			onClose();
 		} catch (error: any) {
@@ -265,31 +296,31 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									value={tourForm.price}
 									onChange={handleChange}
 								/>
-								<select
-									className="rounded border p-2"
-									name="categoryId"
-									value={tourForm.categoryId}
-									onChange={handleChange}
-								>
-									<option value="">Chọn loại tour</option>
-									{categories.map((cat) => (
-										<option
-											key={cat.categoryTourId}
-											value={cat.categoryTourId}
-										>
-											{cat.name}
-										</option>
-									))}
-								</select>
+								<div className="flex flex-col gap-2">
+									<label
+										htmlFor="destination-select"
+										className="text-sm font-medium"
+									>
+										Destination
+									</label>
+									<select
+										className="rounded border p-2"
+										name="categoryId"
+										value={tourForm.categoryId}
+										onChange={handleChange}
+									>
+										<option value="">Chọn loại tour</option>
+										{categories.map((cat) => (
+											<option
+												key={cat.categoryTourId}
+												value={cat.categoryTourId}
+											>
+												{cat.name}
+											</option>
+										))}
+									</select>
+								</div>
 							</div>
-							{/* <Input
-							name="destination"
-							label="Destination"
-							labelPlacement="outside"
-							placeholder="e.g. Da Nang"
-							value={tourForm.destination}
-							onChange={handleChange}
-						/> */}
 							<Textarea
 								isRequired
 								name="description"
@@ -309,6 +340,11 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					<TourSchedules
 						schedules={schedules}
 						setSchedules={setSchedules}
+					/>
+					<TourDestination
+						destinations={destinations}
+						selectedDestinationIds={selectedDestinationIds}
+						setSelectedDestinationIds={setSelectedDestinationIds}
 					/>
 				</ModalBody>
 				<ModalFooter>

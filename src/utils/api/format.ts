@@ -40,6 +40,20 @@ export const formatBirthdayToDMY = (dateString: string): string => {
 	return `${day}-${month}-${year}`;
 };
 
+export const formatDateTimeLocal = (dateStr: string): string => {
+	if (!dateStr) return "";
+	const date = new Date(dateStr);
+	const pad = (n: number) => n.toString().padStart(2, "0");
+
+	const year = date.getFullYear();
+	const month = pad(date.getMonth() + 1);
+	const day = pad(date.getDate());
+	const hours = pad(date.getHours());
+	const minutes = pad(date.getMinutes());
+
+	return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 export class FormatNumber {
 	public static toFormatNumber(num: number): string {
 		return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

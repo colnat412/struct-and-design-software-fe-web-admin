@@ -1,48 +1,48 @@
 "use client";
 
 import { DestinationResponseDto } from "@/api";
-import { useState } from "react";
+import { Checkbox } from "@heroui/react";
 
 interface TourDestinationProps {
 	destinations: DestinationResponseDto[];
-	setDestination: (des: DestinationResponseDto) => void;
+	selectedDestinationIds: string[];
+	setSelectedDestinationIds: (value: string[]) => void;
 }
 
-// export default function TourDestination({ value, onChange }: TourDestinationProps) {
-// 	const [destinations, setDestinations] = useState<DestinationResponseDto[]>([]);
-// 	const [isLoading, setIsLoading] = useState<boolean>(true);
+export const TourDestination: React.FC<TourDestinationProps> = ({
+	destinations,
+	selectedDestinationIds,
+	setSelectedDestinationIds,
+}) => {
+	const handleToggle = (id: string) => {
+		if (selectedDestinationIds.includes(id)) {
+			setSelectedDestinationIds(selectedDestinationIds.filter((item) => item !== id));
+		} else {
+			setSelectedDestinationIds([...selectedDestinationIds, id]);
+		}
+	};
 
-// 	return (
-// 		<div className="flex flex-col gap-2">
-// 			<label
-// 				htmlFor="destination-select"
-// 				className="text-sm font-medium"
-// 			>
-// 				Destination
-// 			</label>
-// 			<select
-// 				id="destination-select"
-// 				name="destinationId"
-// 				value={value}
-// 				onChange={(e) => onChange(e.target.value)}
-// 				className="rounded border p-2"
-// 			>
-// 				<option value="">Select destination</option>
-// 				{destinations.map((dest) => (
-// 					<option
-// 						key={dest.destinationId}
-// 						value={dest.destinationId}
-// 					>
-// 						{dest.name} ({dest.city}, {dest.country})
-// 					</option>
-// 				))}
-// 			</select>
-// 		</div>
-// 	);
-// }
-export default function TourDestination() {
-	const [destinations, setDestinations] = useState<DestinationResponseDto[]>([]);
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-
-	return <div className="flex flex-col gap-2"></div>;
-}
+	return (
+		<div className="flex flex-col gap-2">
+			<h3 className="text-lg font-semibold">Điểm đến (có thể chọn nhiều)</h3>
+			<div className="flex flex-wrap gap-4">
+				{destinations.map((dest) => (
+					<label
+						key={dest.destinationId}
+						className="flex w-[calc(25%-1rem)] items-center gap-2 rounded border p-2"
+					>
+						<Checkbox
+							value={dest.destinationId}
+							isSelected={selectedDestinationIds.includes(dest.destinationId)}
+							onValueChange={() => handleToggle(dest.destinationId)}
+							// Optionally add name, size, color, etc.
+						/>
+						<span className="text-sm">
+							{dest.name} ({dest.city}, {dest.country})
+						</span>
+					</label>
+				))}
+			</div>
+		</div>
+	);
+};

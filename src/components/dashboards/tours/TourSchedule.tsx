@@ -4,6 +4,7 @@ import { Input, Textarea } from "@heroui/input";
 import { Button } from "@heroui/button";
 import { Plus, Trash } from "lucide-react";
 import { TourScheduleRequestDto } from "@/api";
+import { formatDateTimeLocal } from "@/utils/api";
 
 interface TourSchedulesProps {
 	schedules: TourScheduleRequestDto[];
@@ -92,19 +93,23 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						<div className="flex flex-row gap-4">
 							<Input
 								label="Ngày bắt đầu"
-								type="date"
-								value={schedule.startDate?.slice(0, 10)}
-								onChange={(e) => handleChange(index, "startDate", e.target.value)}
+								type="datetime-local"
+								value={schedule.startDate ? formatDateTimeLocal(schedule.startDate) : ""}
+								onChange={(e) =>
+									handleChange(index, "startDate", new Date(e.target.value).toISOString())
+								}
 							/>
 							<Input
 								label="Ngày kết thúc"
-								type="date"
-								value={schedule.endDate?.slice(0, 10)}
-								onChange={(e) => handleChange(index, "endDate", e.target.value)}
+								type="datetime-local"
+								value={schedule.endDate ? formatDateTimeLocal(schedule.endDate) : ""}
+								onChange={(e) =>
+									handleChange(index, "endDate", new Date(e.target.value).toISOString())
+								}
 							/>
 						</div>
 						<div className="flex flex-row gap-4">
-							{/* <Input
+							<Input
 								label="Adult Price"
 								type="number"
 								value={schedule.adultPrice.toString()}
@@ -127,14 +132,14 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 								onChange={(e) =>
 									handleChange(index, "babyPrice", parseFloat(e.target.value) || 0)
 								}
-							/> */}
+							/>
 						</div>
-						{/* <Input
+						<Input
 							label="Slot"
 							type="number"
 							value={schedule.slot.toString()}
 							onChange={(e) => handleChange(index, "slot", parseInt(e.target.value) || 0)}
-						/> */}
+						/>
 					</div>
 				))
 			)}
