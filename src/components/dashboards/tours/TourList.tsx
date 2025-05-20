@@ -132,14 +132,8 @@ export const TourList = () => {
 	};
 
 	return (
-		<div
-			ref={containerRef}
-			className="flex size-full overflow-hidden"
-		>
-			<div
-				className="flex w-full flex-col gap-3 overflow-auto p-4"
-				// style={{ width: selectedTour ? `${leftWidth}%` : "100%" }}
-			>
+		<div className="flex size-full overflow-hidden">
+			<div className="flex w-full flex-col gap-3 overflow-auto p-4">
 				<span className="text-lg font-semibold">Quản lý tour</span>
 				<div className="mb-2 flex items-center gap-4">
 					<Input

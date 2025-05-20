@@ -25,6 +25,19 @@ export interface TourImageResponseDto {
 	description: string;
 }
 
+export interface TourScheduleResponseDto {
+	tourScheduleId: string;
+	name: string;
+	description: string;
+	startDate: string;
+	endDate: string;
+	adultPrice: number;
+	childPrice: number;
+	babyPrice: number;
+	slot: number;
+	tourId: string;
+}
+
 export interface TourDestinationResponseDto {
 	tourDestinationId: string;
 	name: string;

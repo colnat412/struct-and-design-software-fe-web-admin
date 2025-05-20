@@ -1,6 +1,6 @@
 "use client";
 
-import { TourImageRequestDto } from "@/api";
+import { TourImageRequestDto, TourImageResponseDto } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";
@@ -11,7 +11,7 @@ interface TourImagesProps {
 	setImages: (images: TourImageWithFile[]) => void;
 }
 
-type TourImageWithFile = TourImageRequestDto & { file?: File };
+type TourImageWithFile = TourImageResponseDto & { file?: File };
 
 export const TourImages = ({ images, setImages }: TourImagesProps) => {
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -28,6 +28,7 @@ export const TourImages = ({ images, setImages }: TourImagesProps) => {
 				const url = URL.createObjectURL(file);
 				setLoadingImages((prev) => new Set(prev).add(url));
 				return {
+					tourImageId: "",
 					tourId: "",
 					imageUrl: url,
 					description: "",

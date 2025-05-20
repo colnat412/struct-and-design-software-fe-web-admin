@@ -13,6 +13,7 @@ import {
 	TourImageResponseDto,
 	TourResponseDto,
 	TourScheduleRequestDto,
+	TourScheduleResponseDto,
 	TourServices,
 	UpdateTourDestinationDto,
 	UpdateTourDto,
@@ -190,19 +191,21 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					await TourServices.createTourImage(formDataTourImages);
 				}
 				// Create Tour Schedule
-				for (const schedule of schedules) {
-					const tourSchedulePayload = {
-						name: schedule.name,
-						description: schedule.description,
-						startDate: schedule.startDate,
-						endDate: schedule.endDate,
-						adultPrice: schedule.adultPrice,
-						childPrice: schedule.childPrice,
-						babyPrice: schedule.babyPrice,
-						slot: schedule.slot,
-						tourId: newTour.tourId,
-					} as CreateTourScheduleDto;
-					await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
+				if (schedules.length > 0) {
+					for (const schedule of schedules) {
+						const tourSchedulePayload = {
+							name: schedule.name,
+							description: schedule.description,
+							startDate: schedule.startDate,
+							endDate: schedule.endDate,
+							adultPrice: schedule.adultPrice,
+							childPrice: schedule.childPrice,
+							babyPrice: schedule.babyPrice,
+							slot: schedule.slot,
+							tourId: newTour.tourId,
+						} as CreateTourScheduleDto;
+						await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
+					}
 				}
 				// Create Tour Destinations
 				const selectedDestinations = destinations.filter((d) =>
@@ -233,7 +236,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 			if (thumbnail?.file) {
 				thumbnailUrl = await UserServices.uploadImage(thumbnail.file as File);
 			}
-
 			const tourPayload = {
 				name: tourForm.name,
 				description: tourForm.description,
@@ -242,28 +244,66 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				thumbnail: thumbnailUrl,
 				categoryId: tourForm.categoryId,
 			} as UpdateTourDto;
-
 			await tourServices.update(selectedTour?.tourId as string, tourPayload as any, `/tours`);
+			const currentSchedules = await TourServices.getTourSchedulesOfTour(selectedTour!.tourId);
+			if (currentSchedules.length < schedules.length) {
+				// get scheduleNew is schedule diff with currentSchedules
+				const schedulesNew = schedules.filter((schedule) => {
+					return !currentSchedules.some(
+						(currentSchedule: TourScheduleResponseDto) =>
+							currentSchedule.name === schedule.name &&
+							currentSchedule.startDate === schedule.startDate &&
+							currentSchedule.endDate === schedule.endDate,
+					);
+				});
+				for (const schedule of schedulesNew) {
+					const tourSchedulePayload = {
+						name: schedule.name,
+						description: schedule.description,
+						startDate: schedule.startDate,
+						endDate: schedule.endDate,
+						adultPrice: schedule.adultPrice,
+						childPrice: schedule.childPrice,
+						babyPrice: schedule.babyPrice,
+						slot: schedule.slot,
+						tourId: selectedTour?.tourId,
+					} as CreateTourScheduleDto;
+					console.log("Tour Schedule Payload", tourSchedulePayload);
 
-			for (const schedule of schedules) {
-				const tourSchedulePayload = {
-					tourScheduleId: schedule.tourScheduleId,
-					name: schedule.name,
-					description: schedule.description,
-					startDate: schedule.startDate,
-					endDate: schedule.endDate,
-					adultPrice: schedule.adultPrice,
-					childPrice: schedule.childPrice,
-					babyPrice: schedule.babyPrice,
-					slot: schedule.slot,
-					tourId: selectedTour?.tourId,
-				} as UpdateTourScheduleDto;
-				const res = await TourServices.updateTourSchedule(tourSchedulePayload);
+					await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
+				}
+			} else if (currentSchedules.length > schedules.length) {
+				// get scheduleRemove is schedule diff with currentSchedules
+				const schedulesRemove = currentSchedules.filter((currentSchedule: TourScheduleResponseDto) => {
+					return !schedules.some(
+						(schedule: TourScheduleResponseDto) =>
+							currentSchedule.name === schedule.name &&
+							currentSchedule.startDate === schedule.startDate &&
+							currentSchedule.endDate === schedule.endDate,
+					);
+				});
+				for (const schedule of schedulesRemove) {
+					await tourServices.delete(schedule.tourScheduleId, "/tour-schedules");
+				}
+			} else {
+				for (const schedule of schedules) {
+					const tourSchedulePayload = {
+						tourScheduleId: schedule.tourScheduleId,
+						name: schedule.name,
+						description: schedule.description,
+						startDate: schedule.startDate,
+						endDate: schedule.endDate,
+						adultPrice: schedule.adultPrice,
+						childPrice: schedule.childPrice,
+						babyPrice: schedule.babyPrice,
+						slot: schedule.slot,
+						tourId: selectedTour?.tourId,
+					} as UpdateTourScheduleDto;
+					await TourServices.updateTourSchedule(tourSchedulePayload);
+				}
 			}
 
 			const oldImages = await TourServices.getTourImagesOfTour(selectedTour!.tourId);
-			const oldImageIds = oldImages.map((image: TourImageResponseDto) => image.tourImageId);
-
 			const imagesToAdd = images.filter((image) => image.file && !image.tourImageId);
 			const imagesToRemove = oldImages.filter(
 				(image: TourImageResponseDto) => !images.some((img) => img.tourImageId === image.tourImageId),
@@ -285,19 +325,15 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					tourServices.delete(image.tourImageId, "/api/tour-images/delete"),
 				),
 			);
-
 			const currentDestinationIds = selectedDestinationIds;
-
 			const oldDestinations = await TourServices.getTourDestinationsOfTour(selectedTour!.tourId);
 			const oldDestinationIds = oldDestinations.map(
 				(d: TourDestinationResponseDto) => d.destination.destinationId,
 			);
-
 			const destinationsToAdd = currentDestinationIds.filter((id) => !oldDestinationIds.includes(id));
 			const destinationsToRemove = oldDestinations.filter(
 				(d: TourDestinationResponseDto) => !currentDestinationIds.includes(d.destination.destinationId),
 			);
-
 			await Promise.all(
 				destinationsToAdd.map((id, index) => {
 					const dest = destinations.find((d) => d.destinationId === id)!;
@@ -311,7 +347,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					return tourServices.create(payload as any, "/tour-destinations");
 				}),
 			);
-
 			await Promise.all(
 				destinationsToRemove.map((d: TourDestinationResponseDto) =>
 					tourServices.delete(d.tourDestinationId, "/tour-destinations"),
