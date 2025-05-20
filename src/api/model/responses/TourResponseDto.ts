@@ -25,6 +25,16 @@ export interface TourImageResponseDto {
 	description: string;
 }
 
+export interface TourDestinationResponseDto {
+	tourDestinationId: string;
+	name: string;
+	description: string;
+	image: string;
+	orderIndex: number;
+	destination: DestinationResponseDto;
+	active: boolean;
+}
+
 export interface DestinationResponseDto {
 	destinationId: string;
 	name: string;

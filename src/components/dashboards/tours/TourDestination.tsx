@@ -24,7 +24,7 @@ export const TourDestination: React.FC<TourDestinationProps> = ({
 
 	return (
 		<div className="flex flex-col gap-2">
-			<h3 className="text-lg font-semibold">Điểm đến (có thể chọn nhiều)</h3>
+			<h3 className="text-lg font-semibold">Điểm đến</h3>
 			<div className="flex flex-wrap gap-4">
 				{destinations.map((dest) => (
 					<label

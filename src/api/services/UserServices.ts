@@ -91,7 +91,7 @@ export class UserServices extends BaseService<UserResponseDto> {
 
 			const token = localStorage.getItem("token");
 
-			const res = await axios.post(`${apiUrl}/${ServiceConstants.USER_SERVICE}/files/upload/image`, formData, {
+			const res = await axios.post(`${apiUrl}${ServiceConstants.USER_SERVICE}/files/upload/image`, formData, {
 				headers: {
 					"Content-Type": "multipart/form-data",
 					Authorization: `Bearer ${token}`,

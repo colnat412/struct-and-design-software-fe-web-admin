@@ -57,25 +57,26 @@ export const TourList = () => {
 		setIsFilterOpen(false);
 	};
 
+	const fetchData = async () => {
+		try {
+			setIsLoading(true);
+			const tours = await tourServices.getAll("/tours");
+			const categories = await tourServices.getAll("/category-tours");
+			setData(Array.isArray(tours) ? tours : []);
+			setCategories(Array.isArray(categories) ? categories : []);
+		} catch (error) {
+			console.error("Error fetching users:", error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
 	useEffect(() => {
 		const token = localStorage.getItem("token");
 		if (!token) {
 			router.push("/login");
 			return;
 		}
-		const fetchData = async () => {
-			try {
-				setIsLoading(true);
-				const tours = await tourServices.getAll("/tours");
-				const categories = await tourServices.getAll("/category-tours");
-				setData(Array.isArray(tours) ? tours : []);
-				setCategories(Array.isArray(categories) ? categories : []);
-			} catch (error) {
-				console.error("Error fetching users:", error);
-			} finally {
-				setIsLoading(false);
-			}
-		};
 		fetchData();
 	}, []);
 
@@ -308,6 +309,10 @@ export const TourList = () => {
 				selectedTour={selectedTour}
 				isOpen={isModalOpen}
 				onClose={() => setIsModalOpen(false)}
+				onSaved={() => {
+					setIsModalOpen(false);
+					fetchData();
+				}}
 			/>
 		</div>
 	);

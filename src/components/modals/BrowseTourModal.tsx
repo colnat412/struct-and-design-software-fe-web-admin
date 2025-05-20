@@ -8,20 +8,25 @@ import {
 	CreateTourScheduleDto,
 	DestinationResponseDto,
 	ServiceConstants,
+	TourDestinationResponseDto,
 	TourImageRequestDto,
 	TourResponseDto,
 	TourScheduleRequestDto,
 	TourServices,
+	UpdateTourDestinationDto,
+	UpdateTourDto,
+	UpdateTourScheduleDto,
 	UserServices,
 } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { PencilIcon } from "lucide-react";
+import { Loader2, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TourDestination, TourImages, TourSchedules } from "../dashboards";
+import { set } from "lodash";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -39,7 +44,8 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [thumbnail, setThumbnail] = useState<string | undefined>(selectedTour?.thumbnail);
+	const [thumbnail, setThumbnail] = useState<{ imageUrl: string; file?: File } | null>(null);
+	const [thumbnailLoading, setThumbnailLoading] = useState(false);
 
 	const [images, setImages] = useState<TourImageWithFile[]>([]);
 	const [schedules, setSchedules] = useState<TourScheduleRequestDto[]>([]);
@@ -47,11 +53,17 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
-	const [imageFiles, setImageFiles] = useState<File[]>([]);
 	const [selectedDestinationIds, setSelectedDestinationIds] = useState<string[]>([]);
+	const [oldDestinationIds, setOldDestinationIds] = useState<string[]>([]);
+
+	const [isCreate, setIsCreate] = useState<boolean>(false);
 
 	useEffect(() => {
-		setThumbnail(selectedTour?.thumbnail);
+		if (selectedTour?.thumbnail) {
+			setThumbnail({ imageUrl: selectedTour.thumbnail });
+		} else {
+			setThumbnail(null);
+		}
 	}, [selectedTour]);
 
 	useEffect(() => {
@@ -60,10 +72,16 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				if (selectedTour) {
 					const tourImageRes = await TourServices.getTourImagesOfTour(selectedTour.tourId);
 					setImages(tourImageRes);
-					const res = await tourServices.getAll("/destinations");
-					setDestinations(Array.isArray(res) ? res : []);
 					const scheduleRes = await TourServices.getTourSchedulesOfTour(selectedTour.tourId);
 					setSchedules(Array.isArray(scheduleRes) ? scheduleRes : []);
+					const TourDestinationRes = await TourServices.getTourDestinationsOfTour(selectedTour.tourId);
+					setSelectedDestinationIds(
+						TourDestinationRes.map(
+							(tourDestination: TourDestinationResponseDto) =>
+								tourDestination.destination.destinationId,
+						),
+					);
+					console.log("Tour Destination Res", TourDestinationRes);
 				}
 			} catch (err) {
 				console.error("Failed to fetch tour images", err);
@@ -91,8 +109,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				price: selectedTour.price?.toString() || "",
 				categoryId: selectedTour.categoryTour?.categoryTourId || "",
 			});
-			console.log("Selected Tour:", selectedTour);
-			console.log("Form Data:", tourForm);
+			setIsCreate(false);
 		} else {
 			setTourForm({
 				thumbnail: "",
@@ -102,6 +119,10 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				price: "",
 				categoryId: "",
 			});
+			setImages([]);
+			setSchedules([]);
+			setSelectedDestinationIds([]);
+			setIsCreate(true);
 		}
 	}, [selectedTour]);
 
@@ -130,7 +151,8 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 		const file = event.target.files?.[0];
 		if (file) {
 			const imageUrl = URL.createObjectURL(file);
-			setThumbnail(imageUrl);
+			setThumbnailLoading(true);
+			setThumbnail({ imageUrl, file });
 		}
 	};
 
@@ -141,12 +163,13 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 	const handleAddNewTour = async () => {
 		try {
+			const thumbnailUrl = await UserServices.uploadImage(thumbnail?.file as File);
 			const payload = {
 				name: tourForm.name,
 				description: tourForm.description,
 				duration: tourForm.duration,
 				price: Number(tourForm.price),
-				thumbnail: thumbnail || "",
+				thumbnail: thumbnailUrl || "",
 				categoryId: tourForm.categoryId,
 			} as CreateTourDto;
 
@@ -201,6 +224,82 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 		}
 	};
 
+	const handleEditTour = async () => {
+		try {
+			let thumbnailUrl = selectedTour?.thumbnail || "";
+			if (thumbnail?.file) {
+				thumbnailUrl = await UserServices.uploadImage(thumbnail.file as File);
+			}
+
+			const tourPayload = {
+				name: tourForm.name,
+				description: tourForm.description,
+				duration: tourForm.duration,
+				price: Number(tourForm.price),
+				thumbnail: thumbnailUrl,
+				categoryId: tourForm.categoryId,
+			} as UpdateTourDto;
+
+			await tourServices.update(selectedTour?.tourId as string, tourPayload as any, `/tours`);
+
+			for (const schedule of schedules) {
+				const tourSchedulePayload = {
+					tourScheduleId: schedule.tourScheduleId,
+					name: schedule.name,
+					description: schedule.description,
+					startDate: schedule.startDate,
+					endDate: schedule.endDate,
+					adultPrice: schedule.adultPrice,
+					childPrice: schedule.childPrice,
+					babyPrice: schedule.babyPrice,
+					slot: schedule.slot,
+					tourId: selectedTour?.tourId,
+				} as UpdateTourScheduleDto;
+				const res = await TourServices.updateTourSchedule(tourSchedulePayload);
+			}
+
+			// === XỬ LÝ DESTINATIONS ===
+			const currentDestinationIds = selectedDestinationIds;
+			console.log("Current Destination IDs", currentDestinationIds);
+
+			const oldDestinations = await TourServices.getTourDestinationsOfTour(selectedTour!.tourId);
+			const oldDestinationIds = oldDestinations.map(
+				(d: TourDestinationResponseDto) => d.destination.destinationId,
+			);
+			console.log("Old Destination IDs", oldDestinationIds);
+
+			const destinationsToAdd = currentDestinationIds.filter((id) => !oldDestinationIds.includes(id));
+			const destinationsToRemove = oldDestinations.filter(
+				(d: TourDestinationResponseDto) => !currentDestinationIds.includes(d.destination.destinationId),
+			);
+
+			await Promise.all(
+				destinationsToAdd.map((id, index) => {
+					const dest = destinations.find((d) => d.destinationId === id)!;
+					const payload: UpdateTourDestinationDto = {
+						name: dest.name,
+						description: dest.description,
+						orderIndex: index + 1,
+						destinationId: id,
+						tourId: selectedTour!.tourId,
+					};
+					return tourServices.create(payload as any, "/tour-destinations");
+				}),
+			);
+
+			await Promise.all(
+				destinationsToRemove.map((d: TourDestinationResponseDto) =>
+					tourServices.delete(d.tourDestinationId, "/tour-destinations"),
+				),
+			);
+
+			onSaved?.();
+			onClose();
+		} catch (error) {
+			console.error("Failed to update tour:", error);
+		}
+	};
+
 	return (
 		<Modal
 			className="size-11/12 max-w-screen-xl"
@@ -247,14 +346,25 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 							<span className="mb-2 text-sm font-medium">Ảnh đại diện</span>
 							<div
 								onClick={handleImageClick}
-								className="flex h-48 w-80 cursor-pointer flex-col items-center justify-center gap-2 rounded border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
+								className="relative flex h-48 w-80 cursor-pointer items-center justify-center overflow-hidden rounded border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
 							>
 								{thumbnail ? (
-									<img
-										src={thumbnail}
-										alt="Thumbnail"
-										className="h-full w-full object-cover"
-									/>
+									<>
+										{thumbnailLoading && (
+											<div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-50">
+												<Loader2
+													className="animate-spin text-gray-500"
+													size={24}
+												/>
+											</div>
+										)}
+										<img
+											src={thumbnail.imageUrl}
+											alt="Thumbnail"
+											className="h-full w-full object-cover"
+											onLoad={() => setThumbnailLoading(false)}
+										/>
+									</>
 								) : (
 									<>
 										<ImageIcon
@@ -356,7 +466,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					</Button>
 					<Button
 						color="primary"
-						onPress={handleAddNewTour}
+						onPress={isCreate ? handleAddNewTour : handleEditTour}
 					>
 						Lưu
 					</Button>

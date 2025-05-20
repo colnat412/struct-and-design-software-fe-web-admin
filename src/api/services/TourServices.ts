@@ -57,19 +57,26 @@ export class TourServices extends BaseService<TourResponseDto> {
 		}
 	}
 
-	// public static async getAllTours(token: string): Promise<TourResponseDto[]> {
-	// 	try {
-	// 		const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tours`, {});
+	public static async getTourDestinationsOfTour(tourId: string) {
+		try {
+			const response = await api.get(`${ServiceConstants.BOOKING_SERVICE}/tour-destinations/tourId/${tourId}`);
+			return response.data.data;
+		} catch (error) {
+			console.error("Error fetching tour destinations:", error);
+			throw error;
+		}
+	}
 
-	// 		if (response.headers?.location) {
-	// 			console.log("Redirected to:", response.headers.location);
-	// 		}
-
-	// 		console.log("API Response:", response.data);
-	// 		return response.data.data;
-	// 	} catch (error) {
-	// 		console.error("Error fetching tours:", error);
-	// 		throw error;
-	// 	}
-	// }
+	public static async updateTourSchedule(data: any) {
+		try {
+			const response = await api.put(`${ServiceConstants.BOOKING_SERVICE}/tour-schedules/`, data, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			});
+			return response.data.data;
+		} catch (error) {
+			throw error;
+		}
+	}
 }
