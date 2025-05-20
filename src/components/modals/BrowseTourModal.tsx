@@ -10,6 +10,7 @@ import {
 	ServiceConstants,
 	TourDestinationResponseDto,
 	TourImageRequestDto,
+	TourImageResponseDto,
 	TourResponseDto,
 	TourScheduleRequestDto,
 	TourServices,
@@ -35,7 +36,7 @@ interface BrowseTourModalProps {
 	onSaved?: () => void;
 }
 
-type TourImageWithFile = TourImageRequestDto & {
+type TourImageWithFile = TourImageResponseDto & {
 	file?: File;
 };
 
@@ -71,7 +72,9 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 			try {
 				if (selectedTour) {
 					const tourImageRes = await TourServices.getTourImagesOfTour(selectedTour.tourId);
+					console.log("Tour Image Res", tourImageRes);
 					setImages(tourImageRes);
+
 					const scheduleRes = await TourServices.getTourSchedulesOfTour(selectedTour.tourId);
 					setSchedules(Array.isArray(scheduleRes) ? scheduleRes : []);
 					const TourDestinationRes = await TourServices.getTourDestinationsOfTour(selectedTour.tourId);
@@ -258,15 +261,37 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				const res = await TourServices.updateTourSchedule(tourSchedulePayload);
 			}
 
-			// === XỬ LÝ DESTINATIONS ===
+			const oldImages = await TourServices.getTourImagesOfTour(selectedTour!.tourId);
+			const oldImageIds = oldImages.map((image: TourImageResponseDto) => image.tourImageId);
+
+			const imagesToAdd = images.filter((image) => image.file && !image.tourImageId);
+			const imagesToRemove = oldImages.filter(
+				(image: TourImageResponseDto) => !images.some((img) => img.tourImageId === image.tourImageId),
+			);
+			await Promise.all(
+				imagesToAdd.map((image, index) => {
+					const formDataTourImages = new FormData();
+					if (image.file) {
+						formDataTourImages.append("file", image.file);
+					}
+					formDataTourImages.append("description", `Ảnh tour ${index + 1}`);
+					formDataTourImages.append("orderIndex", index.toString());
+					formDataTourImages.append("tourId", selectedTour!.tourId);
+					return TourServices.createTourImage(formDataTourImages);
+				}),
+			);
+			await Promise.all(
+				imagesToRemove.map((image: TourImageResponseDto) =>
+					tourServices.delete(image.tourImageId, "/api/tour-images/delete"),
+				),
+			);
+
 			const currentDestinationIds = selectedDestinationIds;
-			console.log("Current Destination IDs", currentDestinationIds);
 
 			const oldDestinations = await TourServices.getTourDestinationsOfTour(selectedTour!.tourId);
 			const oldDestinationIds = oldDestinations.map(
 				(d: TourDestinationResponseDto) => d.destination.destinationId,
 			);
-			console.log("Old Destination IDs", oldDestinationIds);
 
 			const destinationsToAdd = currentDestinationIds.filter((id) => !oldDestinationIds.includes(id));
 			const destinationsToRemove = oldDestinations.filter(
