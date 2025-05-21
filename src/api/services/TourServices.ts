@@ -1,9 +1,7 @@
-import axios from "axios";
 import { ServiceConstants } from "../common";
-import { TourResponseDto } from "../model";
 import api from "../common/api";
 import BaseService from "../common/base-service";
-import Tour from "@/app/dashboard/tour/page";
+import { TourResponseDto } from "../model";
 
 export class TourServices extends BaseService<TourResponseDto> {
 	constructor(endpoint: string) {
