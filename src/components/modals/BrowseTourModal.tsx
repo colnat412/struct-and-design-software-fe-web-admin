@@ -4,12 +4,10 @@ import {
 	CategoryResponseDto,
 	CreateTourDestinationDto,
 	CreateTourDto,
-	CreateTourImageDto,
 	CreateTourScheduleDto,
 	DestinationResponseDto,
 	ServiceConstants,
 	TourDestinationResponseDto,
-	TourImageRequestDto,
 	TourImageResponseDto,
 	TourResponseDto,
 	TourScheduleRequestDto,
@@ -28,7 +26,6 @@ import { Loader2, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TourDestination, TourImages, TourSchedules } from "../dashboards";
-import { set } from "lodash";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;

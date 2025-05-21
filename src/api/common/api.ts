@@ -1,5 +1,4 @@
 import axios from "axios";
-import { redirect } from "next/dist/server/api-utils";
 
 const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT,

@@ -1,7 +1,7 @@
 import { ServiceConstants } from "../common";
 import api from "../common/api";
 import BaseService from "../common/base-service";
-import { TourResponseDto } from "../model";
+import { TourResponseDto, UpdateTourScheduleDto } from "../model";
 
 export class TourServices extends BaseService<TourResponseDto> {
 	constructor(endpoint: string) {
@@ -65,7 +65,7 @@ export class TourServices extends BaseService<TourResponseDto> {
 		}
 	}
 
-	public static async updateTourSchedule(data: any) {
+	public static async updateTourSchedule(data: UpdateTourScheduleDto) {
 		try {
 			const response = await api.put(`${ServiceConstants.BOOKING_SERVICE}/tour-schedules/`, data, {
 				headers: {
