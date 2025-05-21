@@ -1,7 +1,7 @@
 "use client";
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato } from "next/font/google";
+import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
 import { AvatarIcon, LogoICon, LogoutIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
 import { Menu } from "@/components";
@@ -21,6 +21,12 @@ const geistMono = Geist_Mono({
 });
 
 const lato = Lato({
+	subsets: ["latin"],
+	display: "swap",
+	weight: ["400", "700"],
+});
+
+const meriWeather = Merriweather({
 	subsets: ["latin"],
 	display: "swap",
 	weight: ["400", "700"],
@@ -75,7 +81,7 @@ export default function RootLayout({
 
 	return (
 		<html lang="en">
-			<body className={lato.className}>
+			<body className={meriWeather.className}>
 				<div className="flex h-screen w-full flex-row">
 					<div className="flex h-screen w-1/6 flex-col items-center justify-center gap-12 border-r-2">
 						<LogoICon

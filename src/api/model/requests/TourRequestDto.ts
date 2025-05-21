@@ -8,6 +8,7 @@ export interface TourRequestDto {
 }
 
 export interface TourScheduleRequestDto {
+	tourScheduleId: string;
 	name: string;
 	description: string;
 	startDate: string;
@@ -40,6 +41,15 @@ export interface CreateTourDto {
 	categoryId: string;
 }
 
+export interface UpdateTourDto {
+	name: string;
+	description: string;
+	price: number;
+	thumbnail: string;
+	duration: string;
+	categoryId: string;
+}
+
 export interface CreateTourImageDto {
 	file: File;
 	tourId: string;
@@ -59,7 +69,28 @@ export interface CreateTourScheduleDto {
 	tourId: string;
 }
 
+export interface UpdateTourScheduleDto {
+	tourScheduleId: string;
+	name: string;
+	description: string;
+	startDate: string;
+	endDate: string;
+	adultPrice: number;
+	childPrice: number;
+	babyPrice: number;
+	slot: number;
+	tourId: string;
+}
+
 export interface CreateTourDestinationDto {
+	name: string;
+	description: string;
+	orderIndex: number;
+	tourId: string;
+	destinationId: string;
+}
+
+export interface UpdateTourDestinationDto {
 	name: string;
 	description: string;
 	orderIndex: number;

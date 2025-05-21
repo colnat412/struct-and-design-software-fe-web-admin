@@ -65,6 +65,8 @@ export default class BaseService<T> {
 	}
 
 	async update(id: string | number, data: T, url_api: string): Promise<T> {
+		console.log("Endpoint:", this.endpoint + url_api);
+
 		try {
 			const response = await api.put<T>(`${this.endpoint + url_api}/${id}`, data, {
 				headers: this.getAuthHeader(),
