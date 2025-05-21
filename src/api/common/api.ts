@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ApiResponse } from "../model";
 
 const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT,

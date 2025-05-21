@@ -1,17 +1,14 @@
 "use client";
 
-import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
+import { UserServices } from "@/api";
 import { LogoICon } from "@/assets/svgs/common";
-import { Input } from "@heroui/input";
+import { IErrorAuth, IUser } from "@/types";
 import { Button } from "@heroui/button";
-import { Metadata } from "next";
+import { Input } from "@heroui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { UserServices } from "@/api";
-import { IErrorAuth, IUser } from "@/types";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -31,7 +28,6 @@ const Login = () => {
 		},
 	});
 
-	const [user, setUser] = useState<IUser | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const router = useRouter();

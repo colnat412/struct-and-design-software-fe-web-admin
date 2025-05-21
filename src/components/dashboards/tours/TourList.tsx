@@ -22,12 +22,10 @@ export const TourList = () => {
 	const [selectedTour, setSelectedTour] = useState<TourResponseDto | null>(null);
 	const [isCreate, setIsCreate] = useState<boolean>(false);
 
-	const containerRef = useRef<HTMLDivElement>(null);
-
 	const totalPages = Math.ceil(data.length / rowsPerPage);
 	const currentGroup = Math.ceil(page / pagesPerGroup);
 	const startPage = (currentGroup - 1) * pagesPerGroup + 1;
-	const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
+
 	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
 	const router = useRouter();
@@ -98,7 +96,7 @@ export const TourList = () => {
 	const confirmDelete = async () => {
 		if (!tourToDelete) return;
 		try {
-			console.log("Deleting tour with ID:", tourToDelete.tourId);
+			console.log("Deleting tour with ID:", tourToDelete.tourId, isCreate);
 
 			const token = localStorage.getItem("token");
 			if (!token) {

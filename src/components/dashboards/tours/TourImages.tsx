@@ -1,6 +1,6 @@
 "use client";
 
-import { TourImageRequestDto, TourImageResponseDto } from "@/api";
+import { TourImageResponseDto } from "@/api";
 import { ImageIcon } from "@/assets/svgs/common";
 import { Loader2, X } from "lucide-react";
 import Image from "next/image";

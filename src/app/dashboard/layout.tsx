@@ -1,38 +1,19 @@
 "use client";
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
+import { ServiceConstants, UserServices } from "@/api";
 import { AvatarIcon, LogoICon, LogoutIcon } from "@/assets/svgs/common";
-import { Button } from "@heroui/button";
 import { Menu } from "@/components";
+import { Button } from "@heroui/button";
+import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ServiceConstants, UserResponseDto, UserServices } from "@/api";
 import { useEffect, useState } from "react";
-
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-const lato = Lato({
-	subsets: ["latin"],
-	display: "swap",
-	weight: ["400", "700"],
-});
 
 const meriWeather = Merriweather({
 	subsets: ["latin"],
 	display: "swap",
 	weight: ["400", "700"],
 });
-
-const userServices = new UserServices(ServiceConstants.USER_SERVICE);
 
 interface UserResponse {
 	email: string;

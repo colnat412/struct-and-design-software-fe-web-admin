@@ -26,11 +26,10 @@ export const UserPage = () => {
 	const totalPages = Math.ceil(data.length / rowsPerPage);
 	const currentGroup = Math.ceil(page / pagesPerGroup);
 	const startPage = (currentGroup - 1) * pagesPerGroup + 1;
-	const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
+
 	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
 	const router = useRouter();
-	const pathname = usePathname();
 
 	const userServices = new UserServices(ServiceConstants.USER_SERVICE);
 
@@ -79,24 +78,6 @@ export const UserPage = () => {
 
 		document.addEventListener("mousemove", handleMouseMove);
 		document.addEventListener("mouseup", handleMouseUp);
-	};
-
-	const handleDeleteUser = async (id: string) => {
-		try {
-			const confirmed = window.confirm("Bạn có chắc chắn muốn xóa người dùng này không?");
-			if (!confirmed) return;
-
-			const token = localStorage.getItem("token");
-			if (!token) {
-				router.push("/login");
-				return;
-			}
-
-			await userServices.delete(id, "/users");
-			setData((prev) => prev.filter((user) => user.userId !== id));
-		} catch (error) {
-			console.error("Error deleting user:", error);
-		}
 	};
 
 	const handleDeleteClick = (user: UserResponseDto) => {

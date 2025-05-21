@@ -1,3 +1,4 @@
+import { ApiResponse } from "../model";
 import api from "./api";
 
 export default class BaseService<T> {

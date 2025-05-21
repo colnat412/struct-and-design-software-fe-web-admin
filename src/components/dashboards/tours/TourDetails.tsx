@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { CategoryResponseDto, ServiceConstants, TourRequestDto, TourResponseDto, TourServices } from "@/api";
+import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { Form } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import BrowseTourModal from "@/components/modals/BrowseTourModal";
+import { useEffect, useRef, useState } from "react";
 
 interface TourDetailProps {
 	selectedTour: TourResponseDto | null;
@@ -23,15 +23,6 @@ export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: Tour
 	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const [userForm, setUserForm] = useState<TourRequestDto>({
-		name: "",
-		description: "",
-		duration: "",
-		price: 0,
-		thumbnail: "",
-		tourImages: [],
-	});
 
 	useEffect(() => {
 		setThumbnail(selectedTour?.thumbnail);
