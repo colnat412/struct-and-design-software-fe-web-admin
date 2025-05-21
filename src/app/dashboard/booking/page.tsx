@@ -1,15 +1,12 @@
+import { BookingList } from "@/components/dashboards/bookings";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard | User",
+	title: "Đặt tour",
 };
 
 const Booking = () => {
-	return (
-		<div>
-			<h1>Booking Page</h1>
-		</div>
-	);
+	return <BookingList />;
 };
 
 export default Booking;

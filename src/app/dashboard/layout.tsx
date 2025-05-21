@@ -1,13 +1,12 @@
 "use client";
 
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
+import { ServiceConstants, UserServices } from "@/api";
 import { AvatarIcon, LogoICon, LogoutIcon } from "@/assets/svgs/common";
-import { Button } from "@heroui/button";
 import { Menu } from "@/components";
+import { Button } from "@heroui/button";
+import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ServiceConstants, UserResponseDto, UserServices } from "@/api";
 import { useEffect, useState } from "react";
 
 const geistSans = Geist({
@@ -82,7 +81,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={meriWeather.className}>
-				<div className="flex h-screen w-full flex-row">
+				<div className="flex h-screen min-h-screen w-full flex-row">
 					<div className="flex h-screen w-1/6 flex-col items-center justify-center gap-12 border-r-2">
 						<LogoICon
 							className="m-4"
@@ -109,23 +108,6 @@ export default function RootLayout({
 						</div>
 					</div>
 					<div className="flex-1">{children}</div>
-					<div className="relative">
-						<button className="absolute right-2 top-2 flex flex-col gap-4 rounded-full border-2 border-secondary p-3">
-							{!data?.avatarUrl ? (
-								<AvatarIcon
-									width={20}
-									height={20}
-								/>
-							) : (
-								<Image
-									src={data.avatarUrl || "/default-avatar.png"}
-									width={20}
-									height={20}
-									alt="avatar"
-								/>
-							)}
-						</button>
-					</div>
 				</div>
 			</body>
 		</html>

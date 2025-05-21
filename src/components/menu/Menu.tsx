@@ -48,7 +48,7 @@ export const Menu = () => {
 		},
 		{
 			id: 3,
-			title: "Đặt tour",
+			title: "Booking",
 			icon: (isSelected: boolean) => (
 				<LocationIcon
 					width={40}

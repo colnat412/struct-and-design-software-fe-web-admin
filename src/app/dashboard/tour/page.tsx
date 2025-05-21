@@ -2,7 +2,7 @@ import { TourList } from "@/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard | Tour",
+	title: "Quản lý Tour",
 };
 
 const Tour = () => {

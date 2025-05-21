@@ -16,6 +16,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 		setSchedules([
 			...schedules,
 			{
+				tourScheduleId: "",
 				name: "",
 				description: "",
 				startDate: "",
@@ -81,18 +82,21 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						</div>
 
 						<Input
+							variant="bordered"
 							label="Tên Lịch Trình"
 							value={schedule.name}
 							onChange={(e) => handleChange(index, "name", e.target.value)}
 						/>
 						<Textarea
+							variant="bordered"
 							label="Mô Tả"
 							value={schedule.description}
 							onChange={(e) => handleChange(index, "description", e.target.value)}
 						/>
 						<div className="flex flex-row gap-4">
 							<Input
-								label="Ngày bắt đầu"
+								variant="bordered"
+								label="Ngày đi"
 								type="datetime-local"
 								value={schedule.startDate ? formatDateTimeLocal(schedule.startDate) : ""}
 								onChange={(e) =>
@@ -100,7 +104,8 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 								}
 							/>
 							<Input
-								label="Ngày kết thúc"
+								variant="bordered"
+								label="Ngày về"
 								type="datetime-local"
 								value={schedule.endDate ? formatDateTimeLocal(schedule.endDate) : ""}
 								onChange={(e) =>
@@ -110,6 +115,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						</div>
 						<div className="flex flex-row gap-4">
 							<Input
+								variant="bordered"
 								label="Adult Price"
 								type="number"
 								value={schedule.adultPrice.toString()}
@@ -118,6 +124,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 								}
 							/>
 							<Input
+								variant="bordered"
 								label="Child Price"
 								type="number"
 								value={schedule.childPrice.toString()}
@@ -126,6 +133,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 								}
 							/>
 							<Input
+								variant="bordered"
 								label="Baby Price"
 								type="number"
 								value={schedule.babyPrice.toString()}
@@ -135,6 +143,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 							/>
 						</div>
 						<Input
+							variant="bordered"
 							label="Slot"
 							type="number"
 							value={schedule.slot.toString()}

@@ -4,6 +4,7 @@ import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { ConfirmDeleteModal } from "@/components/modals";
 import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import FilterModal from "@/components/modals/FilterModal";
+import { Pagination } from "@/components/Pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";
@@ -24,10 +25,6 @@ export const TourList = () => {
 
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const totalPages = Math.ceil(data.length / rowsPerPage);
-	const currentGroup = Math.ceil(page / pagesPerGroup);
-	const startPage = (currentGroup - 1) * pagesPerGroup + 1;
-	const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
 	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
 	const router = useRouter();
@@ -235,46 +232,12 @@ export const TourList = () => {
 							</TableBody>
 						</Table>
 
-						<div className="mt-4 flex flex-row justify-end gap-2 text-center">
-							<Button
-								size="sm"
-								onPress={() => setPage((prev) => Math.max(prev - 1, 1))}
-								disabled={page === 1}
-								className={`min-w-10 rounded ${
-									page === 1
-										? "cursor-not-allowed bg-gray-200 text-gray-400"
-										: "bg-gray-300 hover:bg-gray-400"
-								}`}
-							>
-								Back
-							</Button>
-							{Array.from({ length: totalPages }, (_, i) => (
-								<Button
-									size="sm"
-									key={i + 1}
-									onPress={() => setPage(i + 1)}
-									className={`min-w-10 rounded ${
-										page === i + 1
-											? "bg-primary text-white"
-											: "bg-gray-200 hover:bg-gray-300"
-									}`}
-								>
-									{i + 1}
-								</Button>
-							))}
-							<Button
-								size="sm"
-								onPress={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-								disabled={page === totalPages}
-								className={`min-w-10 rounded ${
-									page === totalPages
-										? "cursor-not-allowed bg-gray-200 text-gray-400"
-										: "bg-gray-300 hover:bg-gray-400"
-								}`}
-							>
-								Next
-							</Button>
-						</div>
+						<Pagination
+							currentPage={page}
+							totalItems={data.length}
+							itemsPerPage={rowsPerPage}
+							onPageChange={setPage}
+						/>
 					</>
 				)}
 			</div>
