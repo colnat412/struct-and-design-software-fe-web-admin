@@ -210,8 +210,11 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4"
 			onSubmit={(e) => {
 				e.preventDefault();
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				isCreating ? handleAddNew() : handleEdit();
+				if (isCreating) {
+					handleAddNew();
+				} else {
+					handleEdit();
+				}
 			}}
 		>
 			<span className="mx-1 font-semibold">User Information</span>

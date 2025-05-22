@@ -1,7 +1,12 @@
 import { BookingPage } from "@/components/dashboards/bookings";
+import { Suspense } from "react";
 
 const Test = () => {
-	return <BookingPage />;
+	return (
+		<Suspense>
+			<BookingPage />
+		</Suspense>
+	);
 };
 
 export default Test;
