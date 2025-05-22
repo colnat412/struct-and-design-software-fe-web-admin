@@ -134,10 +134,10 @@ export const BookingPage = () => {
 	};
 
 	return (
-		<div className="m-4 flex flex-col items-center bg-white py-8">
+		<div className="flex flex-col items-center gap-2 bg-white p-4 py-8">
 			<h2 className="flex text-center text-3xl font-bold text-primary">ĐẶT TOUR</h2>
 			<div className="flex w-full max-w-full flex-row justify-center gap-8">
-				<div className="flex min-w-0 flex-1 flex-col rounded-lg bg-white p-6 shadow">
+				<div className="flex min-w-0 flex-1 flex-col rounded-lg bg-white p-6">
 					<h3 className="mb-2 text-lg font-bold uppercase">Thông tin liên lạc</h3>
 					<div className="mb-3 rounded bg-orange-50 px-3 py-2 text-sm text-primary">
 						Điền <span className="font-semibold">đúng</span> thông tin để liên lạc, nhận xác nhận và
@@ -381,7 +381,7 @@ export const BookingPage = () => {
 					))}
 				</div>
 				{tour && schedule && (
-					<div className="flex max-h-min w-1/3 flex-col rounded-lg border-[1.5px] border-gray-300 bg-white p-6 shadow-md">
+					<div className="flex max-h-min w-1/3 flex-col rounded-lg border-[1.5px] border-gray-300 bg-white p-6">
 						<h3 className="mb-4 text-lg font-bold uppercase">Tóm tắt chuyến đi</h3>
 						<div className="mb-4 flex w-full flex-row gap-3">
 							<Image
@@ -404,35 +404,36 @@ export const BookingPage = () => {
 								</span>
 							</div>
 						</div>
-						<div className="mb-2 flex justify-between text-sm">
-							<span>Giá người lớn:</span>
-							<span>{schedule.adultPrice.toLocaleString()} đ</span>
+						<div className="flex flex-col gap-2">
+							<div className="flex flex-row justify-between text-sm">
+								<span>Giá người lớn:</span>
+								<span>{schedule.adultPrice.toLocaleString()} đ</span>
+							</div>
+							<div className="flex flex-row justify-between text-sm">
+								<span>Giá trẻ em:</span>
+								<span>{schedule.childPrice.toLocaleString()} đ</span>
+							</div>
+							<div className="flex flex-row justify-between text-sm">
+								<span>Giá em bé:</span>
+								<span>{schedule.babyPrice.toLocaleString()} đ</span>
+							</div>
+							<div className="flex flex-row justify-between text-sm">
+								<span>Giảm giá:</span>
+								<span>0 đ</span>
+							</div>
+							<div className="flex flex-row justify-between text-lg font-bold text-primary">
+								<span>Tổng tiền</span>
+								<span>
+									{(
+										schedule.adultPrice * adults +
+										schedule.childPrice * children +
+										schedule.babyPrice * babies
+									).toLocaleString()}{" "}
+									đ
+								</span>
+							</div>
+							<span className="mb-2 text-xs text-gray-500">(Đã bao gồm thuế và phí)</span>
 						</div>
-						<div className="mb-2 flex justify-between text-sm">
-							<span>Giá trẻ em:</span>
-							<span>{schedule.childPrice.toLocaleString()} đ</span>
-						</div>
-						<div className="mb-2 flex justify-between text-sm">
-							<span>Giá em bé:</span>
-							<span>{schedule.babyPrice.toLocaleString()} đ</span>
-						</div>
-						<div className="mb-2 flex justify-between text-sm">
-							<span>Giảm giá:</span>
-							<span>0 đ</span>
-						</div>
-
-						<div className="my-4 flex justify-between text-lg font-bold text-orange-500">
-							<span>Tổng tiền</span>
-							<span>
-								{(
-									schedule.adultPrice * adults +
-									schedule.childPrice * children +
-									schedule.babyPrice * babies
-								).toLocaleString()}{" "}
-								đ
-							</span>
-						</div>
-						<div className="mb-2 text-xs text-gray-500">Đã bao gồm thuế và phí</div>
 						<Button
 							size="lg"
 							color="primary"

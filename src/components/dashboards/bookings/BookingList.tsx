@@ -1,5 +1,5 @@
 "use client";
-import { BookingResponseDto, BookingServices, ServiceConstants } from "@/api";
+import { BookingResponseDto, BookingServices, ServiceConstants, TourResponseDto } from "@/api";
 import { SearchIcon } from "@/assets/svgs/common";
 import { Pagination } from "@/components/Pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -88,7 +88,7 @@ export const BookingList = () => {
 									<TableHead className="item-s font-bold">Tên người đặt</TableHead>
 									<TableHead className="font-bold">Số điện thoại</TableHead>
 									<TableHead className="font-bold">Địa chỉ</TableHead>
-									<TableHead className="font-bold">Tên tour</TableHead>
+									{/* <TableHead className="font-bold">Tên tour</TableHead> */}
 									<TableHead className="font-bold">Ngày đi</TableHead>
 									<TableHead className="font-bold">Ngày về</TableHead>
 									<TableHead className="font-bold">Tổng số vé</TableHead>
@@ -105,7 +105,7 @@ export const BookingList = () => {
 										<TableCell>{booking.userFullName}</TableCell>
 										<TableCell>{booking.userPhone}</TableCell>
 										<TableCell>{booking.userAddress}</TableCell>
-										<TableCell>{}</TableCell>
+										{/* <TableCell>{}</TableCell> */}
 										<TableCell>
 											{dayjs(booking.tourSchedule.startDate).format(
 												"DD/MM/YYYY HH:mm",

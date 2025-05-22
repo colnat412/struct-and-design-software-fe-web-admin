@@ -17,6 +17,7 @@ export interface ScheduleBookingResponseDto {
 	description: string;
 	startDate: string;
 	endDate: string;
+	tourId: string;
 }
 
 export interface TicketResponseDto {

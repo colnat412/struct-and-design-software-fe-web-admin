@@ -468,7 +468,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									value={tourForm.price}
 									onChange={handleChange}
 								/>
-								<div className="flex flex-col gap-2">
+								<div className="flex flex-col gap-1">
 									<label
 										htmlFor="destination-select"
 										className="text-sm font-medium"
@@ -476,7 +476,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 										Loại tour <span className="text-red-500">*</span>
 									</label>
 									<select
-										className="rounded border p-2"
+										className="rounded-xl border p-2 shadow-sm"
 										name="categoryId"
 										value={tourForm.categoryId}
 										onChange={handleChange}
