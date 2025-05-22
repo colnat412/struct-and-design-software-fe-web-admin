@@ -104,6 +104,7 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 								}
 							/>
 							<Input
+								className="!block"
 								variant="bordered"
 								label="Ngày về"
 								type="datetime-local"

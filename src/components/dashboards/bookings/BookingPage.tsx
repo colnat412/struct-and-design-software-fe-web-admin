@@ -134,7 +134,7 @@ export const BookingPage = () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			await bookingServices.create(payload as any, "/books/create-booking-admin");
 			toast.success("Đặt tour thành công");
-			router.push("/bookings");
+			router.push("/dashboard/booking");
 		} catch (error) {
 			toast.error("Đặt tour thất bại");
 			throw error;

@@ -6,7 +6,7 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Form, Radio, RadioGroup } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface UserDetailProps {
 	selectedUser: UserResponseDto | null;
@@ -124,12 +124,12 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			if (!updatedUser) {
 				throw new Error("No response from server");
 			}
+			toast.success("Người dùng đã được chỉnh sửa");
 
 			if (avatarFile) {
 				await UserServices.uploadAvatar(userId, avatarFile);
 			}
 
-			toast.success("Người dùng đã được chỉnh sửa");
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
 				setData(freshData);
@@ -191,7 +191,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				await UserServices.uploadAvatar(newUser.userId, avatarFile);
 			}
 
-			toast.success("User created successfully!");
+			toast.success("Tạo người dùng thành công");
 
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
@@ -201,7 +201,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			}
 		} catch (error) {
 			console.error(error);
-			toast.error("Failed to create user");
+			toast.error("Tạo người dùng thất bại");
 		}
 	};
 
@@ -217,10 +217,10 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				}
 			}}
 		>
-			<span className="mx-1 font-semibold">User Information</span>
+			<span className="mx-1 font-semibold">Thông tin người dùng</span>
 			<div className="flex w-full flex-col gap-5">
 				<div className="flex flex-col gap-3">
-					<label className="font-medium">Avatar</label>
+					<label className="font-medium">Ảnh đại diện</label>
 					<div
 						className="h-32 w-32 cursor-pointer overflow-hidden rounded-full"
 						onClick={handleAvatarClick}
@@ -233,7 +233,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 							/>
 						) : (
 							<div className="flex h-full w-full items-center justify-center bg-gray-300 text-sm">
-								Choose a image
+								Chọn ảnh
 							</div>
 						)}
 					</div>
@@ -249,9 +249,9 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				<Input
 					isRequired
 					name="username"
-					label="Username"
+					label="Tên đăng nhập"
 					labelPlacement="outside"
-					placeholder="Enter username"
+					placeholder="Nhập tên đăng nhập"
 					value={isCreating ? userForm.username : selectedUser?.username || ""}
 					onChange={handleChange}
 					isDisabled={!isCreating}
@@ -261,7 +261,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					name="email"
 					label="Email"
 					labelPlacement="outside"
-					placeholder="Enter email"
+					placeholder="Nhập email"
 					type="email"
 					value={isCreating ? userForm.email : selectedUser?.email || ""}
 					onChange={handleChange}
@@ -270,27 +270,27 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				<Input
 					isRequired
 					name="fullName"
-					label="Full Name"
+					label="Họ và tên"
 					labelPlacement="outside"
-					placeholder="Enter full name"
+					placeholder="Nhập họ và tên"
 					value={userForm.fullName || ""}
 					onChange={handleChange}
 				/>
 				<Input
 					isRequired
 					name="phone"
-					label="Phone"
+					label="Số điện thoại"
 					labelPlacement="outside"
-					placeholder="Enter phone number"
+					placeholder="Nhập số điện thoại"
 					value={userForm.phone || ""}
 					onChange={handleChange}
 					pattern="[0-9]{10,11}"
-					title="Phone number must be 10-11 digits"
+					title="Số điện thoại phải có 10-11 chữ số"
 				/>
 				<Input
 					isRequired
 					name="birthday"
-					label="Birthday"
+					label="Ngày sinh"
 					labelPlacement="outside"
 					type="date"
 					value={userForm.birthday}
@@ -300,7 +300,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 					<Input
 						isRequired
 						name="password"
-						label="Password"
+						label="Mật khẩu"
 						labelPlacement="outside"
 						placeholder="Enter password"
 						type="password"
@@ -311,7 +311,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				)}
 
 				<RadioGroup
-					label="Gender"
+					label="Giới tính"
 					className="flex w-full items-start justify-start"
 					orientation="horizontal"
 					defaultValue={userForm.gender}
@@ -323,24 +323,25 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 						}));
 					}}
 				>
-					<Radio value="0">Female</Radio>
-					<Radio value="1">Male</Radio>
+					<Radio value="0">Nữ</Radio>
+					<Radio value="1">Nam</Radio>
 				</RadioGroup>
 				<div className="flex w-full justify-end gap-4">
 					<Button
+						color="success"
 						onPress={() => {
 							setSelectedUser(null);
 							setIsCreate(false);
 						}}
 						type="button"
 					>
-						Cancel
+						Hủy
 					</Button>
 					<Button
 						color="primary"
 						type="submit"
 					>
-						{isCreating ? "Create" : "Save"}
+						{isCreating ? "Tạo mới" : "Lưu"}
 					</Button>
 				</div>
 			</div>

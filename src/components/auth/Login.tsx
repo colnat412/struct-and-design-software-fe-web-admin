@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const Login = () => {
 	const [username, setUsername] = useState<string>("");
@@ -41,7 +41,7 @@ const Login = () => {
 				},
 				errorMessages: {
 					...prevError.errorMessages,
-					username: "Username is required",
+					username: "Tên người dùng không được để trống",
 				},
 			}));
 			return false;
@@ -70,7 +70,7 @@ const Login = () => {
 				},
 				errorMessages: {
 					...prevError.errorMessages,
-					password: "Password is required",
+					password: "Mật khẩu không được để trống",
 				},
 			}));
 			return false;
@@ -107,37 +107,13 @@ const Login = () => {
 			const result = await UserServices.signIn(username, password);
 
 			if (result) {
-				toast.success("Login successful!", {
-					duration: 3000,
-					position: "top-right",
-					style: {
-						background: "#22c55e",
-						color: "#fff",
-						padding: "16px",
-					},
-				});
+				toast.success("Đăng nhập thành công");
 				router.push("/dashboard/user");
 			} else {
-				toast.error("Username or password is incorrect", {
-					duration: 3000,
-					position: "top-right",
-					style: {
-						background: "#ef4444",
-						color: "#fff",
-						padding: "16px",
-					},
-				});
+				toast.error("Tên người dùng hoặc mật khẩu không đúng");
 			}
 		} catch (err: unknown) {
-			toast.error("An error occurred during login", {
-				duration: 3000,
-				position: "top-right",
-				style: {
-					background: "#ef4444",
-					color: "#fff",
-					padding: "16px",
-				},
-			});
+			toast.error("Đã xảy ra lỗi trong quá trình đăng nhập");
 
 			if (err instanceof Error) {
 				console.error("Login error:", err.message);
@@ -152,11 +128,11 @@ const Login = () => {
 	return (
 		<div className="flex h-screen w-full max-w-full flex-col items-center justify-center gap-8 max-sm:w-full sm:w-full md:w-full lg:w-full">
 			<LogoICon className="h-40 w-40 sm:h-60 sm:w-60 md:h-72 md:w-72" />
-			<h1 className="text-xl font-bold max-sm:text-sm">Nice to see you again</h1>
+			<h1 className="text-xl font-bold max-sm:text-sm">Rất vui được gặp lại bạn</h1>
 			<div className="flex flex-col items-center justify-center gap-6 max-sm:w-full sm:w-full md:w-full lg:w-full">
 				<Input
 					className="max-lg:w-5/6 lg:w-1/4"
-					label="Username"
+					label="Tên đăng nhập"
 					type="username"
 					size="lg"
 					color="default"
@@ -168,7 +144,7 @@ const Login = () => {
 				/>
 				<Input
 					className="max-lg:w-5/6 lg:w-1/4"
-					label="Password"
+					label="Mật khẩu"
 					type="password"
 					size="lg"
 					color="default"
@@ -185,16 +161,16 @@ const Login = () => {
 								className="md:item-center text-sm text-red-600 underline max-sm:text-xs"
 								href="#"
 							>
-								Forgot Password ?
+								Quên mật khẩu ?
 							</Link>
 						</PopoverTrigger>
 						<PopoverContent>
 							<div className="px-1 py-2">
 								<div className="flex items-center justify-center text-xl font-bold text-[#FC4337]">
-									Warning!
+									Cảnh báo!
 								</div>
 								<div className="text-md text-center font-semibold">
-									Please contact administrator <br /> to reset your password.
+									Vui lòng liên hệ với quản trị viên <br /> để đặt lại mật khẩu của bạn.
 								</div>
 							</div>
 						</PopoverContent>
@@ -231,7 +207,7 @@ const Login = () => {
 					</svg>
 				}
 			>
-				{isLoading ? "Signing in..." : "Sign in"}
+				{isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
 			</Button>
 			{error.isError.isLogin && <div className="text-sm text-red-500">{error.errorMessages.isLogin}</div>}
 		</div>
