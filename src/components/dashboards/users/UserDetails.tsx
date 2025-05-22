@@ -119,7 +119,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			};
 
 			console.log("Payload:", payload);
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const updatedUser = await userServices.update(userId, payload as any, "/users");
 			if (!updatedUser) {
 				throw new Error("No response from server");
@@ -176,7 +176,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				gender: parseInt(userForm.gender),
 				role: "USER",
 			};
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const newUser = await userServices.create(payload as any, "/users/register");
 			if (newUser) {
 				toast.success("Người dùng đã được tạo mới");
@@ -210,7 +210,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			className="flex h-1/3 w-full max-w-full flex-col gap-4 p-4"
 			onSubmit={(e) => {
 				e.preventDefault();
-				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				isCreating ? handleAddNew() : handleEdit();
 			}}
 		>

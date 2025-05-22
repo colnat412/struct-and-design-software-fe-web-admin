@@ -176,7 +176,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				thumbnail: thumbnailUrl || "",
 				categoryId: tourForm.categoryId,
 			} as CreateTourDto;
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const newTour = await tourServices.create(payload as any, "/tours");
 			if (newTour) {
 				toast.success("Tạo tour mới thành công");
@@ -205,7 +205,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 							slot: schedule.slot,
 							tourId: newTour.tourId,
 						} as CreateTourScheduleDto;
-						// @ts-ignore
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
 						await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
 					}
 				}
@@ -221,11 +221,11 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						orderIndex: index + 1,
 						destinationId: destination.destinationId,
 					};
-					// @ts-ignore
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					await tourServices.create(destinationPayload as any, "/tour-destinations");
 				}
 			}
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			onSaved?.();
 			onClose();
 		} catch (error) {
@@ -247,7 +247,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 				thumbnail: thumbnailUrl,
 				categoryId: tourForm.categoryId,
 			} as UpdateTourDto;
-			// @ts-ignore
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			await tourServices.update(selectedTour?.tourId as string, tourPayload as any, `/tours`);
 			const currentSchedules = await TourServices.getTourSchedulesOfTour(selectedTour!.tourId);
 			if (currentSchedules.length < schedules.length) {
@@ -272,7 +272,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						tourId: selectedTour?.tourId,
 					} as CreateTourScheduleDto;
 					console.log("Tour Schedule Payload", tourSchedulePayload);
-					// @ts-ignore
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
 				}
 			} else if (currentSchedules.length > schedules.length) {
@@ -346,7 +346,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						destinationId: id,
 						tourId: selectedTour!.tourId,
 					};
-					// @ts-ignore
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					return tourServices.create(payload as any, "/tour-destinations");
 				}),
 			);
