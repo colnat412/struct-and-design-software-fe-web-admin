@@ -133,7 +133,7 @@ export const BookingPage = () => {
 
 			await bookingServices.create(payload as any, "/books/create-booking-admin");
 			toast.success("Đặt tour thành công");
-			router.push("/bookings");
+			router.push("/dashboard/bookings");
 		} catch (error) {
 			toast.error("Đặt tour thất bại");
 			throw error;
