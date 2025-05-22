@@ -27,3 +27,18 @@ export interface TicketResponseDto {
 	note: string;
 	ticketType: string;
 }
+
+export interface BookingStatisticsCategoryResponseDto {
+	categoryName: string;
+	count: number;
+}
+
+export interface BookingRevenueStatisticsDto {
+	month: number;
+	totalRevenue: number;
+}
+
+export interface BookingTop3TourStatisticsDto {
+	tourId: string;
+	totalBooking: number;
+}
