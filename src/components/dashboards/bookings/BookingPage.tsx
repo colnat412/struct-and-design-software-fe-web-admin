@@ -1,6 +1,14 @@
 "use client";
 
-import { ServiceConstants, TourResponseDto, TourScheduleRequestDto, TourServices } from "@/api";
+import {
+	CreateBookingDto,
+	ServiceConstants,
+	TourResponseDto,
+	TourScheduleRequestDto,
+	TourServices,
+	BookingTicketDto,
+	BookingServices,
+} from "@/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Image, Select, SelectItem } from "@heroui/react";
@@ -9,9 +17,24 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 export const BookingPage = () => {
-	const [adults, setAdults] = useState<number>(1);
-	const [children, setChildren] = useState<number>(1);
+	const [adults, setAdults] = useState<number>(0);
+	const [children, setChildren] = useState<number>(0);
 	const [babies, setBabies] = useState<number>(0);
+
+	const [adultsInfo, setAdultsInfo] = useState<BookingTicketDto[]>([
+		{ ticketType: "ADULT", fullName: "", gender: "", birthDate: "" },
+	]);
+	const [childrenInfo, setChildrenInfo] = useState<BookingTicketDto[]>([]);
+	const [babiesInfo, setBabiesInfo] = useState<BookingTicketDto[]>([]);
+
+	const [bookingForm, setBookingForm] = useState<Omit<CreateBookingDto, "tickets">>({
+		userFullName: "",
+		userPhone: "",
+		userEmail: "",
+		userAddress: "",
+		tourScheduleId: "",
+		note: "",
+	});
 
 	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 
@@ -19,13 +42,33 @@ export const BookingPage = () => {
 	const tourId = searchParams.get("tourId");
 	const scheduleId = searchParams.get("scheduleId");
 
-	const [tour, setTour] = useState<TourResponseDto | null>();
-	const [schedule, setSchedule] = useState<TourScheduleRequestDto | null>();
+	const [tour, setTour] = useState<TourResponseDto | null>(null);
+	const [schedule, setSchedule] = useState<TourScheduleRequestDto | null>(null);
 
-	const handleChange = (setter: React.Dispatch<React.SetStateAction<number>>, value: number) => {
-		if (value < 0) return;
-		setter(value);
-	};
+	const bookingServices = new BookingServices(ServiceConstants.BOOKING_SERVICE);
+
+	useEffect(() => {
+		setAdultsInfo((prev) => {
+			const arr = [...prev];
+			while (arr.length < adults) arr.push({ ticketType: "ADULT", fullName: "", gender: "", birthDate: "" });
+			return arr.slice(0, adults);
+		});
+	}, [adults]);
+	useEffect(() => {
+		setChildrenInfo((prev) => {
+			const arr = [...prev];
+			while (arr.length < children) arr.push({ ticketType: "CHILD", fullName: "", gender: "", birthDate: "" });
+			return arr.slice(0, children);
+		});
+	}, [children]);
+	useEffect(() => {
+		setBabiesInfo((prev) => {
+			const arr = [...prev];
+			while (arr.length < babies) arr.push({ ticketType: "BABY", fullName: "", gender: "", birthDate: "" });
+			return arr.slice(0, babies);
+		});
+	}, [babies]);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			if (tourId) {
@@ -35,10 +78,61 @@ export const BookingPage = () => {
 			if (scheduleId) {
 				const scheduleData = await tourServices.getById(scheduleId, "/tour-schedules");
 				setSchedule(scheduleData as any);
+				setBookingForm((prev) => ({
+					...prev,
+					tourScheduleId: scheduleId,
+				}));
 			}
 		};
 		fetchData();
 	}, [tourId, scheduleId]);
+
+	const handleChange = (setter: React.Dispatch<React.SetStateAction<number>>, value: number) => {
+		if (value < 0) return;
+		setter(value);
+	};
+
+	const handlePassengerChange = (
+		type: "ADULT" | "CHILD" | "BABY",
+		index: number,
+		field: keyof BookingTicketDto,
+		value: string,
+	) => {
+		const setter = type === "ADULT" ? setAdultsInfo : type === "CHILD" ? setChildrenInfo : setBabiesInfo;
+		const getter = type === "ADULT" ? adultsInfo : type === "CHILD" ? childrenInfo : babiesInfo;
+		const updated = [...getter];
+		updated[index] = { ...updated[index], ticketType: type, [field]: value };
+		setter(updated);
+	};
+
+	const handleAddNew = async () => {
+		try {
+			if (
+				!bookingForm.userFullName ||
+				!bookingForm.userPhone ||
+				!bookingForm.tourScheduleId ||
+				adults + children + babies === 0
+			) {
+				alert("Vui lòng nhập đầy đủ thông tin!");
+				return;
+			}
+			const tickets: BookingTicketDto[] = [
+				...adultsInfo.slice(0, adults),
+				...childrenInfo.slice(0, children),
+				...babiesInfo.slice(0, babies),
+			];
+			const payload: CreateBookingDto = {
+				...bookingForm,
+				tickets,
+			};
+			console.log("payload", payload);
+
+			await bookingServices.create(payload as any, "/books/create-booking");
+		} catch (error) {
+			throw error;
+		}
+	};
+
 	return (
 		<div className="m-4 flex flex-col items-center bg-white py-8">
 			<h2 className="flex text-center text-3xl font-bold text-primary">ĐẶT TOUR</h2>
@@ -53,18 +147,49 @@ export const BookingPage = () => {
 						<Input
 							variant="bordered"
 							isRequired
-							name="fullName"
+							name="userFullName"
 							label="Họ tên"
 							labelPlacement="outside"
 							placeholder="Nguyễn Văn A"
+							value={bookingForm.userFullName}
+							onChange={(e) => setBookingForm((f) => ({ ...f, userFullName: e.target.value }))}
 						/>
 						<Input
 							variant="bordered"
 							isRequired
-							name="phone"
+							name="userPhone"
 							label="Điện thoại"
 							labelPlacement="outside"
 							placeholder="0987654321"
+							value={bookingForm.userPhone}
+							onChange={(e) => setBookingForm((f) => ({ ...f, userPhone: e.target.value }))}
+						/>
+						<Input
+							variant="bordered"
+							name="userEmail"
+							label="Email"
+							labelPlacement="outside"
+							placeholder="example@email.com"
+							value={bookingForm.userEmail}
+							onChange={(e) => setBookingForm((f) => ({ ...f, userEmail: e.target.value }))}
+						/>
+						<Input
+							variant="bordered"
+							name="userAddress"
+							label="Địa chỉ"
+							labelPlacement="outside"
+							placeholder="Số nhà, đường, quận/huyện, tỉnh/thành"
+							value={bookingForm.userAddress}
+							onChange={(e) => setBookingForm((f) => ({ ...f, userAddress: e.target.value }))}
+						/>
+						<Input
+							variant="bordered"
+							name="note"
+							label="Ghi chú"
+							labelPlacement="outside"
+							placeholder="Ghi chú thêm (nếu có)"
+							value={bookingForm.note}
+							onChange={(e) => setBookingForm((f) => ({ ...f, note: e.target.value }))}
 						/>
 					</div>
 
@@ -137,6 +262,7 @@ export const BookingPage = () => {
 							<div className="mb-2 font-medium">Chưa có hành khách nào</div>
 						</div>
 					)}
+					{/* Người lớn */}
 					{Array.from({ length: adults }).map((_, idx) => (
 						<div
 							key={`adult-${idx}`}
@@ -147,24 +273,35 @@ export const BookingPage = () => {
 								<Input
 									variant="bordered"
 									placeholder="Nhập họ tên"
+									value={adultsInfo[idx]?.fullName || ""}
+									onChange={(e) =>
+										handlePassengerChange("ADULT", idx, "fullName", e.target.value)
+									}
 								/>
 								<Select
 									variant="bordered"
 									className="max-w-xs"
 									placeholder="Chọn giới tính"
+									selectedKeys={adultsInfo[idx]?.gender ? [adultsInfo[idx].gender] : []}
+									onChange={(e) =>
+										handlePassengerChange("ADULT", idx, "gender", e.target.value)
+									}
 								>
-									<SelectItem>Nam</SelectItem>
-									<SelectItem>Nữ</SelectItem>
+									<SelectItem key="male">Nam</SelectItem>
+									<SelectItem key="female">Nữ</SelectItem>
 								</Select>
-
 								<Input
 									variant="bordered"
 									type="date"
+									value={adultsInfo[idx]?.birthDate || ""}
+									onChange={(e) =>
+										handlePassengerChange("ADULT", idx, "birthDate", e.target.value)
+									}
 								/>
-								<Button color="success">Xác nhận</Button>
 							</div>
 						</div>
 					))}
+					{/* Trẻ em */}
 					{Array.from({ length: children }).map((_, idx) => (
 						<div
 							key={`child-${idx}`}
@@ -175,24 +312,35 @@ export const BookingPage = () => {
 								<Input
 									variant="bordered"
 									placeholder="Nhập họ tên"
+									value={childrenInfo[idx]?.fullName || ""}
+									onChange={(e) =>
+										handlePassengerChange("CHILD", idx, "fullName", e.target.value)
+									}
 								/>
 								<Select
 									variant="bordered"
 									className="max-w-xs"
 									placeholder="Chọn giới tính"
+									selectedKeys={childrenInfo[idx]?.gender ? [childrenInfo[idx].gender] : []}
+									onChange={(e) =>
+										handlePassengerChange("CHILD", idx, "gender", e.target.value)
+									}
 								>
-									<SelectItem>Nam</SelectItem>
-									<SelectItem>Nữ</SelectItem>
+									<SelectItem key="male">Nam</SelectItem>
+									<SelectItem key="female">Nữ</SelectItem>
 								</Select>
-
 								<Input
 									variant="bordered"
 									type="date"
+									value={childrenInfo[idx]?.birthDate || ""}
+									onChange={(e) =>
+										handlePassengerChange("CHILD", idx, "birthDate", e.target.value)
+									}
 								/>
-								<Button color="success">Xác nhận</Button>
 							</div>
 						</div>
 					))}
+					{/* Em bé */}
 					{Array.from({ length: babies }).map((_, idx) => (
 						<div
 							key={`baby-${idx}`}
@@ -203,21 +351,31 @@ export const BookingPage = () => {
 								<Input
 									variant="bordered"
 									placeholder="Nhập họ tên"
+									value={babiesInfo[idx]?.fullName || ""}
+									onChange={(e) =>
+										handlePassengerChange("BABY", idx, "fullName", e.target.value)
+									}
 								/>
 								<Select
 									variant="bordered"
 									className="max-w-xs"
 									placeholder="Chọn giới tính"
+									selectedKeys={babiesInfo[idx]?.gender ? [babiesInfo[idx].gender] : []}
+									onChange={(e) =>
+										handlePassengerChange("BABY", idx, "gender", e.target.value)
+									}
 								>
-									<SelectItem>Nam</SelectItem>
-									<SelectItem>Nữ</SelectItem>
+									<SelectItem key="male">Nam</SelectItem>
+									<SelectItem key="female">Nữ</SelectItem>
 								</Select>
-
 								<Input
 									variant="bordered"
 									type="date"
+									value={babiesInfo[idx]?.birthDate || ""}
+									onChange={(e) =>
+										handlePassengerChange("BABY", idx, "birthDate", e.target.value)
+									}
 								/>
-								<Button color="success">Xác nhận</Button>
 							</div>
 						</div>
 					))}
@@ -231,7 +389,7 @@ export const BookingPage = () => {
 								alt={tour.name}
 								width={100}
 								height={100}
-								className="h-24 w-24 rounded-lg object-cover"
+								className="h-24 w-24 max-w-full rounded-lg object-cover"
 							/>
 							<div className="flex flex-col gap-2">
 								<span className="font-semibold">{tour.name}</span>
@@ -278,6 +436,7 @@ export const BookingPage = () => {
 						<Button
 							size="lg"
 							color="primary"
+							onPress={handleAddNew}
 						>
 							Tiếp tục đặt chỗ
 						</Button>

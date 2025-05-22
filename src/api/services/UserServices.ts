@@ -1,4 +1,3 @@
-import { IErrorAuth } from "@/types";
 import axios from "axios";
 import { ServiceConstants } from "../common";
 import BaseService from "../common/base-service";
