@@ -79,6 +79,7 @@ export const BookingPage = () => {
 			}
 			if (scheduleId) {
 				const scheduleData = await tourServices.getById(scheduleId, "/tour-schedules");
+				// @ts-ignore
 				setSchedule(scheduleData as any);
 				setBookingForm((prev) => ({
 					...prev,
@@ -130,7 +131,7 @@ export const BookingPage = () => {
 				tickets,
 			};
 			console.log("payload", payload);
-
+			// @ts-ignore
 			await bookingServices.create(payload as any, "/books/create-booking-admin");
 			toast.success("Đặt tour thành công");
 			router.push("/bookings");
