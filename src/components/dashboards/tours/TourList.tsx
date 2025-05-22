@@ -95,7 +95,7 @@ export const TourList = () => {
 	const confirmDelete = async () => {
 		if (!tourToDelete) return;
 		try {
-			console.log("Deleting tour with ID:", tourToDelete.tourId);
+			console.log("Deleting tour with ID:", tourToDelete.tourId, isCreate);
 
 			const token = localStorage.getItem("token");
 			if (!token) {

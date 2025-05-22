@@ -1,8 +1,7 @@
 "use client";
 
-import { ConstructionIcon, NotFoundIcon } from "@/assets/svgs/common";
+import { ConstructionIcon } from "@/assets/svgs/common";
 import { Button } from "@heroui/button";
-import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 
 export const NotFoundComponent = () => {

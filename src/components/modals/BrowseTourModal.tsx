@@ -54,7 +54,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 	const [categories, setCategories] = useState<CategoryResponseDto[]>([]);
 	const [isEditingName, setIsEditingName] = useState<boolean>(false);
 	const [selectedDestinationIds, setSelectedDestinationIds] = useState<string[]>([]);
-	const [oldDestinationIds, setOldDestinationIds] = useState<string[]>([]);
 
 	const [isCreate, setIsCreate] = useState<boolean>(false);
 	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
