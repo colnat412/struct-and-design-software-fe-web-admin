@@ -129,6 +129,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 				await UserServices.uploadAvatar(userId, avatarFile);
 			}
 
+			toast.success("Người dùng đã được chỉnh sửa");
 			const freshData = await userServices.getAll("/users");
 			if (Array.isArray(freshData)) {
 				setData(freshData);
@@ -176,7 +177,9 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			};
 
 			const newUser = await userServices.create(payload as any, "/users/register");
-
+			if (newUser) {
+				toast.success("Người dùng đã được tạo mới");
+			}
 			if (!newUser?.userId) {
 				throw new Error("Failed to create user");
 			}

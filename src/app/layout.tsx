@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const meriWeather = Merriweather({
 	subsets: ["latin"],
@@ -21,7 +22,13 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			{/* <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body> */}
-			<body className={meriWeather.className}>{children}</body>
+			<body className={meriWeather.className}>
+				<Toaster
+					richColors
+					position="top-right"
+				/>
+				{children}
+			</body>
 		</html>
 	);
 }

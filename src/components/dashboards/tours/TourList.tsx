@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const rowsPerPage = 10;
-const pagesPerGroup = 5;
 
 export const TourList = () => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -23,8 +22,7 @@ export const TourList = () => {
 	const [selectedTour, setSelectedTour] = useState<TourResponseDto | null>(null);
 	const [isCreate, setIsCreate] = useState<boolean>(false);
 
-	const containerRef = useRef<HTMLDivElement>(null);
-
+	const totalPages = Math.ceil(data.length / rowsPerPage);
 	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
 	const router = useRouter();
@@ -232,12 +230,52 @@ export const TourList = () => {
 							</TableBody>
 						</Table>
 
-						<Pagination
+						{/* <Pagination
 							currentPage={page}
 							totalItems={data.length}
 							itemsPerPage={rowsPerPage}
 							onPageChange={setPage}
-						/>
+						/> */}
+						<div className="mt-4 flex flex-row justify-end gap-2 text-center">
+							<Button
+								size="sm"
+								onPress={() => setPage((prev) => Math.max(prev - 1, 1))}
+								disabled={page === 1}
+								className={`min-w-10 rounded ${
+									page === 1
+										? "cursor-not-allowed bg-gray-200 text-gray-400"
+										: "bg-gray-300 hover:bg-gray-400"
+								}`}
+							>
+								Back
+							</Button>
+							{Array.from({ length: totalPages }, (_, i) => (
+								<Button
+									size="sm"
+									key={i + 1}
+									onPress={() => setPage(i + 1)}
+									className={`min-w-10 rounded ${
+										page === i + 1
+											? "bg-primary text-white"
+											: "bg-gray-200 hover:bg-gray-300"
+									}`}
+								>
+									{i + 1}
+								</Button>
+							))}
+							<Button
+								size="sm"
+								onPress={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+								disabled={page === totalPages}
+								className={`min-w-10 rounded ${
+									page === totalPages
+										? "cursor-not-allowed bg-gray-200 text-gray-400"
+										: "bg-gray-300 hover:bg-gray-400"
+								}`}
+							>
+								Next
+							</Button>
+						</div>
 					</>
 				)}
 			</div>

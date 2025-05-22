@@ -99,7 +99,7 @@ export default function BookingScheduleModal({
 							if (selectedIndex !== null) {
 								const selected = schedules[selectedIndex];
 								router.push(
-									`/dashboard/test?tourId=${tour.tourId}&scheduleId=${selected.tourScheduleId}`,
+									`/dashboard/book-tour?tourId=${tour.tourId}&scheduleId=${selected.tourScheduleId}`,
 								);
 								onClose();
 							}
