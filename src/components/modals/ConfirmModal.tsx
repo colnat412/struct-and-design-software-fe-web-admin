@@ -27,23 +27,22 @@ export const ConfirmDeleteModal = ({
 					<>
 						<ModalHeader>
 							<span className="text-md">
-								Are you sure you want to delete{" "}
+								Bạn có chắc muốn xóa{" "}
 								<span className="font-semibold text-primary">{itemName}</span> ?
 							</span>
 						</ModalHeader>
 						<ModalBody className="flex flex-row">
-							<span className="text-md opacity-70">This action cannot be undone</span>
+							<span className="text-sm opacity-70">Hành động này không thể hoàn tác</span>
 						</ModalBody>
 						<ModalFooter>
 							<Button
-								variant="light"
-								color="default"
+								color="success"
 								onPress={() => {
 									onCancel?.();
 									onClose();
 								}}
 							>
-								Cancel
+								Hủy
 							</Button>
 							<Button
 								color="primary"
@@ -52,7 +51,7 @@ export const ConfirmDeleteModal = ({
 									onClose();
 								}}
 							>
-								Confirm
+								Xác nhận
 							</Button>
 						</ModalFooter>
 					</>

@@ -14,13 +14,13 @@ const rowsPerPage = 10;
 const pagesPerGroup = 5;
 
 export const UserPage = () => {
-	const [isLoading, setIsLoading] = useState(false);
-	const [page, setPage] = useState(1);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [page, setPage] = useState<number>(1);
 	const [data, setData] = useState<UserResponseDto[]>([]);
 	const [selectedUser, setSelectedUser] = useState<UserResponseDto | null>(null);
 	const [isCreate, setIsCreate] = useState<boolean>(false);
 
-	const [leftWidth, setLeftWidth] = useState(60);
+	const [leftWidth, setLeftWidth] = useState<number>(60);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const totalPages = Math.ceil(data.length / rowsPerPage);

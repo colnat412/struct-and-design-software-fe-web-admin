@@ -48,7 +48,7 @@ export const Menu = () => {
 		},
 		{
 			id: 3,
-			title: "Đặt tour",
+			title: "Booking",
 			icon: (isSelected: boolean) => (
 				<LocationIcon
 					width={40}
@@ -56,7 +56,7 @@ export const Menu = () => {
 					className={isSelected ? "text-white" : "text-black"}
 				/>
 			),
-			path: "/booking",
+			path: "/dashboard/booking",
 		},
 	];
 

@@ -17,7 +17,6 @@ interface TourDetailProps {
 
 export const TourDetails = ({ selectedTour, setSelectedTour, setIsCreate }: TourDetailProps) => {
 	const router = useRouter();
-	const bookingServices = new TourServices(ServiceConstants.BOOKING_SERVICE);
 	const [thumbnail, setThumbnail] = useState<string | undefined>(selectedTour?.thumbnail);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const tourServices = new TourServices(ServiceConstants.BOOKING_SERVICE);

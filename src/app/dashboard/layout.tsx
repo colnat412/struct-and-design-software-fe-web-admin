@@ -63,7 +63,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={meriWeather.className}>
-				<div className="flex h-screen w-full flex-row">
+				<div className="flex h-screen min-h-screen w-full flex-row">
 					<div className="flex h-screen w-1/6 flex-col items-center justify-center gap-12 border-r-2">
 						<LogoICon
 							className="m-4"
@@ -90,23 +90,6 @@ export default function RootLayout({
 						</div>
 					</div>
 					<div className="flex-1">{children}</div>
-					<div className="relative">
-						<button className="absolute right-2 top-2 flex flex-col gap-4 rounded-full border-2 border-secondary p-3">
-							{!data?.avatarUrl ? (
-								<AvatarIcon
-									width={20}
-									height={20}
-								/>
-							) : (
-								<Image
-									src={data.avatarUrl || "/default-avatar.png"}
-									width={20}
-									height={20}
-									alt="avatar"
-								/>
-							)}
-						</button>
-					</div>
 				</div>
 			</body>
 		</html>

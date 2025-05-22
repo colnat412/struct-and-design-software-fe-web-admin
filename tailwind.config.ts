@@ -34,6 +34,10 @@ const config = {
 					DEFAULT: "#00315C",
 					foreground: "#FFFFFF",
 				},
+				success: {
+					DEFAULT: "#000000",
+					foreground: "#FFFFFF",
+				},
 				destructive: {
 					DEFAULT: "hsl(var(--destructive))",
 					foreground: "hsl(var(--destructive-foreground))",

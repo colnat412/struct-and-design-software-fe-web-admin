@@ -2,7 +2,7 @@ import { UserPage } from "@/components";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Dashboard | User",
+	title: "Quản lý người dùng",
 };
 
 const User = () => {

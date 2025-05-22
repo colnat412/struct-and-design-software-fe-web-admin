@@ -26,6 +26,7 @@ import { Loader2, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TourDestination, TourImages, TourSchedules } from "../dashboards";
+import BookingScheduleModal from "./ChooseScheduleModal";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -55,6 +56,8 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 	const [selectedDestinationIds, setSelectedDestinationIds] = useState<string[]>([]);
 
 	const [isCreate, setIsCreate] = useState<boolean>(false);
+	const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+	const [selectedSchedule, setSelectedSchedule] = useState<TourScheduleResponseDto | null>(null);
 
 	useEffect(() => {
 		if (selectedTour?.thumbnail) {
@@ -243,7 +246,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 			await tourServices.update(selectedTour?.tourId as string, tourPayload as any, `/tours`);
 			const currentSchedules = await TourServices.getTourSchedulesOfTour(selectedTour!.tourId);
 			if (currentSchedules.length < schedules.length) {
-				// get scheduleNew is schedule diff with currentSchedules
 				const schedulesNew = schedules.filter((schedule) => {
 					return !currentSchedules.some(
 						(currentSchedule: TourScheduleResponseDto) =>
@@ -269,7 +271,6 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					await tourServices.create(tourSchedulePayload as any, "/tour-schedules");
 				}
 			} else if (currentSchedules.length > schedules.length) {
-				// get scheduleRemove is schedule diff with currentSchedules
 				const schedulesRemove = currentSchedules.filter((currentSchedule: TourScheduleResponseDto) => {
 					return !schedules.some(
 						(schedule: TourScheduleResponseDto) =>
@@ -399,7 +400,9 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 					<div className="flex flex-col gap-4">
 						<div className="m-1 flex flex-col gap-1">
-							<span className="mb-2 text-sm font-medium">Ảnh đại diện</span>
+							<span className="mb-2 text-sm font-medium">
+								Ảnh đại diện <span className="text-red-500">*</span>
+							</span>
 							<div
 								onClick={handleImageClick}
 								className="relative flex h-48 w-80 cursor-pointer items-center justify-center overflow-hidden rounded border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100"
@@ -444,6 +447,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						<div className="flex flex-col gap-4">
 							<div className="flex flex-row gap-2">
 								<Input
+									variant="bordered"
 									isRequired
 									name="duration"
 									label="Thời lượng"
@@ -453,6 +457,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									onChange={handleChange}
 								/>
 								<Input
+									variant="bordered"
 									isRequired
 									name="price"
 									label="Giá"
@@ -462,15 +467,15 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 									value={tourForm.price}
 									onChange={handleChange}
 								/>
-								<div className="flex flex-col gap-2">
+								<div className="flex flex-col gap-1">
 									<label
 										htmlFor="destination-select"
 										className="text-sm font-medium"
 									>
-										Destination
+										Loại tour <span className="text-red-500">*</span>
 									</label>
 									<select
-										className="rounded border p-2"
+										className="rounded-xl border p-2 shadow-sm"
 										name="categoryId"
 										value={tourForm.categoryId}
 										onChange={handleChange}
@@ -488,6 +493,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 								</div>
 							</div>
 							<Textarea
+								variant="bordered"
 								isRequired
 								name="description"
 								label="Mô tả"
@@ -512,14 +518,31 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 						selectedDestinationIds={selectedDestinationIds}
 						setSelectedDestinationIds={setSelectedDestinationIds}
 					/>
+					{selectedTour && (
+						<BookingScheduleModal
+							isOpen={isBookingModalOpen}
+							onClose={() => setIsBookingModalOpen(false)}
+							tour={selectedTour}
+							schedules={schedules}
+							onSelect={(schedule) => setSelectedSchedule(schedule)}
+						/>
+					)}
 				</ModalBody>
 				<ModalFooter>
 					<Button
-						color="secondary"
+						color="success"
 						onPress={onClose}
 					>
 						Hủy
 					</Button>
+					{!isCreate && (
+						<Button
+							color="secondary"
+							onPress={() => setIsBookingModalOpen(true)}
+						>
+							Đặt tour
+						</Button>
+					)}
 					<Button
 						color="primary"
 						onPress={isCreate ? handleAddNewTour : handleEditTour}
