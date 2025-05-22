@@ -1,6 +1,6 @@
 export interface BookingResponseDto {
 	bookingId: string;
-	status: string;
+	status: "PAID" | "EXPIRED" | "PENDING";
 	totalPrice: number;
 	note: string;
 	userFullName: string;

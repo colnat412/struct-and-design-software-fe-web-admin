@@ -13,8 +13,9 @@ import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Image, Select, SelectItem } from "@heroui/react";
 import dayjs from "dayjs";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const BookingPage = () => {
 	const [adults, setAdults] = useState<number>(0);
@@ -46,6 +47,7 @@ export const BookingPage = () => {
 	const [schedule, setSchedule] = useState<TourScheduleRequestDto | null>(null);
 
 	const bookingServices = new BookingServices(ServiceConstants.BOOKING_SERVICE);
+	const router = useRouter();
 
 	useEffect(() => {
 		setAdultsInfo((prev) => {
@@ -109,11 +111,13 @@ export const BookingPage = () => {
 		try {
 			if (
 				!bookingForm.userFullName ||
+				!bookingForm.userEmail ||
+				!bookingForm.userAddress ||
 				!bookingForm.userPhone ||
 				!bookingForm.tourScheduleId ||
 				adults + children + babies === 0
 			) {
-				alert("Vui lòng nhập đầy đủ thông tin!");
+				toast.warning("Vui lòng nhập đầy đủ thông tin bắt buộc");
 				return;
 			}
 			const tickets: BookingTicketDto[] = [
@@ -127,8 +131,11 @@ export const BookingPage = () => {
 			};
 			console.log("payload", payload);
 
-			await bookingServices.create(payload as any, "/books/create-booking");
+			await bookingServices.create(payload as any, "/books/create-booking-admin");
+			toast.success("Đặt tour thành công");
+			router.push("/bookings");
 		} catch (error) {
+			toast.error("Đặt tour thất bại");
 			throw error;
 		}
 	};
@@ -145,6 +152,7 @@ export const BookingPage = () => {
 					</div>
 					<div className="mb-4 flex flex-col gap-3">
 						<Input
+							className="shadow-none"
 							variant="bordered"
 							isRequired
 							name="userFullName"
@@ -262,7 +270,6 @@ export const BookingPage = () => {
 							<div className="mb-2 font-medium">Chưa có hành khách nào</div>
 						</div>
 					)}
-					{/* Người lớn */}
 					{Array.from({ length: adults }).map((_, idx) => (
 						<div
 							key={`adult-${idx}`}
@@ -301,7 +308,6 @@ export const BookingPage = () => {
 							</div>
 						</div>
 					))}
-					{/* Trẻ em */}
 					{Array.from({ length: children }).map((_, idx) => (
 						<div
 							key={`child-${idx}`}
@@ -340,7 +346,6 @@ export const BookingPage = () => {
 							</div>
 						</div>
 					))}
-					{/* Em bé */}
 					{Array.from({ length: babies }).map((_, idx) => (
 						<div
 							key={`baby-${idx}`}

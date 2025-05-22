@@ -27,7 +27,7 @@ export const BookingList = () => {
 	const fetchData = async () => {
 		try {
 			setIsLoading(true);
-			const bookings = await bookingServices.getAll("/books/my-bookings");
+			const bookings = await bookingServices.getAll("/books");
 			setData(Array.isArray(bookings) ? bookings : []);
 		} catch (error) {
 			console.error("Error fetching users:", error);
@@ -88,11 +88,11 @@ export const BookingList = () => {
 									<TableHead className="item-s font-bold">Tên người đặt</TableHead>
 									<TableHead className="font-bold">Số điện thoại</TableHead>
 									<TableHead className="font-bold">Địa chỉ</TableHead>
-									{/* <TableHead className="font-bold">Tên tour</TableHead> */}
 									<TableHead className="font-bold">Ngày đi</TableHead>
 									<TableHead className="font-bold">Ngày về</TableHead>
 									<TableHead className="font-bold">Tổng số vé</TableHead>
 									<TableHead className="font-bold">Tổng tiền</TableHead>
+									<TableHead className="font-bold">Trạng thái</TableHead>
 									<TableHead className="font-bold">Ghi chú</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -105,7 +105,6 @@ export const BookingList = () => {
 										<TableCell>{booking.userFullName}</TableCell>
 										<TableCell>{booking.userPhone}</TableCell>
 										<TableCell>{booking.userAddress}</TableCell>
-										{/* <TableCell>{}</TableCell> */}
 										<TableCell>
 											{dayjs(booking.tourSchedule.startDate).format(
 												"DD/MM/YYYY HH:mm",
@@ -132,6 +131,13 @@ export const BookingList = () => {
 										</TableCell>
 										<TableCell>
 											{FormatNumber.toFormatNumber(booking.totalPrice ?? 0)} đ
+										</TableCell>
+										<TableCell>
+											{booking.status === "PAID"
+												? "Đã thanh toán"
+												: booking.status === "EXPIRED"
+													? "Hết hạn"
+													: "Đang chờ"}
 										</TableCell>
 										<TableCell>{booking.note || "Không có ghi chú"}</TableCell>
 									</TableRow>

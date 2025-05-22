@@ -27,6 +27,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { TourDestination, TourImages, TourSchedules } from "../dashboards";
 import BookingScheduleModal from "./ChooseScheduleModal";
+import { toast, Toaster } from "sonner";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -178,6 +179,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 
 			const newTour = await tourServices.create(payload as any, "/tours");
 			if (newTour) {
+				toast.success("Tạo tour mới thành công");
 				// Create Tour Images
 				for (const [index, image] of images.entries()) {
 					const formDataTourImages = new FormData();
@@ -349,7 +351,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 					tourServices.delete(d.tourDestinationId, "/tour-destinations"),
 				),
 			);
-
+			toast.success("Tour đã được chỉnh sửa");
 			onSaved?.();
 			onClose();
 		} catch (error) {

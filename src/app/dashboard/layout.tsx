@@ -8,6 +8,7 @@ import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Toaster } from "sonner";
 
 const meriWeather = Merriweather({
 	subsets: ["latin"],
@@ -89,6 +90,10 @@ export default function RootLayout({
 							</Button>
 						</div>
 					</div>
+					<Toaster
+						richColors
+						position="top-right"
+					/>
 					<div className="flex-1">{children}</div>
 				</div>
 			</body>
