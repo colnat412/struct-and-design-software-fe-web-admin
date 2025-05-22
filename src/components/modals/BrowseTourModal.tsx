@@ -25,9 +25,9 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@herou
 import { Loader2, PencilIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { TourDestination, TourImages, TourSchedules } from "../dashboards";
 import BookingScheduleModal from "./ChooseScheduleModal";
-import { toast, Toaster } from "sonner";
 
 interface BrowseTourModalProps {
 	selectedTour: TourResponseDto | null;
@@ -85,7 +85,7 @@ export default function BrowseTourModal({ selectedTour, isOpen, onClose, onSaved
 								tourDestination.destination.destinationId,
 						),
 					);
-					console.log("Tour Destination Res", TourDestinationRes);
+					console.log("Tour Destination Res", TourDestinationRes, selectedSchedule);
 				}
 			} catch (err) {
 				console.error("Failed to fetch tour images", err);

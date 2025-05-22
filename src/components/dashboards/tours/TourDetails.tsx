@@ -1,6 +1,6 @@
 "use client";
 
-import { CategoryResponseDto, ServiceConstants, TourRequestDto, TourResponseDto, TourServices } from "@/api";
+import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
 import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";

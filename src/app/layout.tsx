@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
-import "./globals.css";
+import { Merriweather } from "next/font/google";
 import { Toaster } from "sonner";
+import "./globals.css";
 
 const meriWeather = Merriweather({
 	subsets: ["latin"],

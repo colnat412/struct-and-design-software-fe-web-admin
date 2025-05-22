@@ -4,14 +4,13 @@ import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { ConfirmDeleteModal } from "@/components/modals";
 import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import FilterModal from "@/components/modals/FilterModal";
-import { Pagination } from "@/components/Pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { FormatNumber } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Image } from "@heroui/image";
 import { Input } from "@heroui/input";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const rowsPerPage = 10;
 

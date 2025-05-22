@@ -1,10 +1,10 @@
 "use client";
 
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
-import { Button } from "@heroui/button";
 import { TourResponseDto, TourScheduleResponseDto } from "@/api";
-import { useState } from "react";
+import { Button } from "@heroui/button";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface BookingScheduleModalProps {
 	isOpen: boolean;
@@ -14,13 +14,7 @@ interface BookingScheduleModalProps {
 	onSelect: (schedule: TourScheduleResponseDto) => void;
 }
 
-export default function BookingScheduleModal({
-	isOpen,
-	onClose,
-	tour,
-	schedules,
-	onSelect,
-}: BookingScheduleModalProps) {
+export default function BookingScheduleModal({ isOpen, onClose, tour, schedules }: BookingScheduleModalProps) {
 	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 	const router = useRouter();
 	return (

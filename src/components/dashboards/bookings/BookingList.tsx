@@ -1,5 +1,5 @@
 "use client";
-import { BookingResponseDto, BookingServices, ServiceConstants, TourResponseDto } from "@/api";
+import { BookingResponseDto, BookingServices, ServiceConstants } from "@/api";
 import { SearchIcon } from "@/assets/svgs/common";
 import { Pagination } from "@/components/Pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,7 +22,6 @@ export const BookingList = () => {
 	const router = useRouter();
 
 	const bookingServices = new BookingServices(ServiceConstants.BOOKING_SERVICE);
-	const tourServices = new BookingServices(ServiceConstants.BOOKING_SERVICE);
 
 	const fetchData = async () => {
 		try {

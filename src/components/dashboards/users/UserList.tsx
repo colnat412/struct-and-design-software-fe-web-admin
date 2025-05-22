@@ -1,17 +1,17 @@
 "use client";
 import { ServiceConstants, UserResponseDto, UserServices } from "@/api";
 import { SearchIcon, TrashIconn } from "@/assets/svgs/common";
+import { ConfirmDeleteModal } from "@/components/modals";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDateToDisplay } from "@/utils/api";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { UserDetails } from "./UserDetails";
-import { ConfirmDeleteModal } from "@/components/modals";
 
 const rowsPerPage = 10;
-const pagesPerGroup = 5;
+// const pagesPerGroup = 5;
 
 export const UserPage = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -24,8 +24,8 @@ export const UserPage = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const totalPages = Math.ceil(data.length / rowsPerPage);
-	const currentGroup = Math.ceil(page / pagesPerGroup);
-	const startPage = (currentGroup - 1) * pagesPerGroup + 1;
+	// const currentGroup = Math.ceil(page / pagesPerGroup);
+	// const startPage = (currentGroup - 1) * pagesPerGroup + 1;
 
 	const currentData = data.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 

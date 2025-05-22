@@ -2,7 +2,7 @@
 
 import { UserServices } from "@/api";
 import { LogoICon } from "@/assets/svgs/common";
-import { IErrorAuth, IUser } from "@/types";
+import { IErrorAuth } from "@/types";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const Login = () => {
 	const [username, setUsername] = useState<string>("");
 	const [password, setPassword] = useState<string>("");

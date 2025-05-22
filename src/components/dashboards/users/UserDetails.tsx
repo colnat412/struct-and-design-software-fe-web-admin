@@ -138,6 +138,7 @@ export const UserDetails = ({ selectedUser, setSelectedUser, setIsCreate, setDat
 			}
 		} catch (error) {
 			toast.error("Failed to update user");
+			throw error;
 		}
 	};
 

@@ -1,11 +1,9 @@
 "use client";
 
-import { ServiceConstants, UserServices } from "@/api";
-import { AvatarIcon, LogoICon, LogoutIcon } from "@/assets/svgs/common";
+import { LogoICon, LogoutIcon } from "@/assets/svgs/common";
 import { Menu } from "@/components";
 import { Button } from "@heroui/button";
-import { Geist, Geist_Mono, Lato, Merriweather } from "next/font/google";
-import Image from "next/image";
+import { Merriweather } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
