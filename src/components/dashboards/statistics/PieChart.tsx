@@ -25,6 +25,7 @@ export const PieChartComponent = ({ year }: { year: number }) => {
 		fetchData();
 	}, [year]);
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }: any) => {
 		const RADIAN = Math.PI / 180;
 		const radius = innerRadius + (outerRadius - innerRadius) * 0.5;

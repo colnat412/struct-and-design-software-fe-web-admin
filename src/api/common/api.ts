@@ -1,5 +1,4 @@
 import axios from "axios";
-import { ApiResponse } from "../model/responses/ApiRespone";
 
 const api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_API_ENDPOINT,
@@ -28,12 +27,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
 	(response) => response,
 	(error) => {
-		const errorResponse = error.response.data as ApiResponse<null>;
-		if (errorResponse.statusCode === 401) {
+		const status = error.response?.status;
+		if (status === 401) {
 			localStorage.removeItem("token");
 			window.location.href = "/login";
 		} else {
-			console.error("⛔ Axios: ", error.status + " - " + error.config?.url);
+			console.error("⛔ Axios: ", status + " - " + error.config?.url);
 		}
 		return Promise.reject(error);
 	},
