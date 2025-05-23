@@ -1,8 +1,8 @@
 "use client";
 
+import { BookingServices, BookingTop3TourStatisticsDto, ServiceConstants, TourServices } from "@/api";
 import { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, LabelList } from "recharts";
-import { BookingServices, TourServices, ServiceConstants, TourResponseDto, BookingTop3TourStatisticsDto } from "@/api";
+import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface ChartItem {
 	tourName: string;

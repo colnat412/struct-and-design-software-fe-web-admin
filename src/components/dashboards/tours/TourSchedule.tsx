@@ -95,6 +95,9 @@ export const TourSchedules: React.FC<TourSchedulesProps> = ({ schedules, setSche
 						/>
 						<div className="flex flex-row gap-4">
 							<Input
+								classNames={{
+									inputWrapper: "inline-flex",
+								}}
 								variant="bordered"
 								label="Ngày đi"
 								type="datetime-local"

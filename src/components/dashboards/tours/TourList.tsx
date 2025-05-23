@@ -1,6 +1,6 @@
 "use client";
 import { CategoryResponseDto, ServiceConstants, TourResponseDto, TourServices } from "@/api";
-import { FilterIcon, SearchIcon, TrashIconn } from "@/assets/svgs/common";
+import { SearchIcon, TrashIconn } from "@/assets/svgs/common";
 import { ConfirmDeleteModal } from "@/components/modals";
 import BrowseTourModal from "@/components/modals/BrowseTourModal";
 import FilterModal from "@/components/modals/FilterModal";
@@ -166,12 +166,12 @@ export const TourList = () => {
 					>
 						Thêm mới
 					</Button>
-					<Button
+					{/* <Button
 						startContent={<FilterIcon />}
 						onPress={() => setIsFilterOpen(true)}
 						radius="none"
 						className="rounded-sm bg-primary"
-					></Button>
+					></Button> */}
 				</div>
 				{isLoading ? (
 					<div className="flex items-center justify-center py-10">

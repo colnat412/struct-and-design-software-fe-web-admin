@@ -1,7 +1,6 @@
-import axios from "axios";
+import api from "../common/api";
 import BaseService from "../common/base-service";
 import { BookingResponseDto } from "../model";
-import api from "../common/api";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
